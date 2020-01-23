@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+  You're a Playlister!
+</h1>
+
+{% if playlist_links|length != 0 %}
+  {% for link in playlist_links %}
+    <p>{{link}}</p>
+  {% endfor %}
+{% else %}
+<p>No playlists yet, add one here!</p>
+<form method="POST" action="/check_playlist">
+  <div class="field has-addons">
+    <div class="control">
+      <input class="input" type="text" name="playlist_uri" placeholder="Your Playlist URI">
+    </div>
+    <div class="control">
+      <button class="button is-info">
+        Search
+      </button>
+    </div>
+  </div>
+</form>
+{% endif %}
+
+{% endblock %}
