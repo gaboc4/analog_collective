@@ -13,9 +13,7 @@ main = Blueprint('main', __name__)
 
 scopes = 'playlist-modify-public'
 
-sp_oauth = oauth2.SpotifyOAuth(client_id='e2141c4d6523483082e21d27558b1217',
-									client_secret='198d638c1f2f4cad821c21f9b25cc60e',
-									redirect_uri='http://127.0.0.1:5000/profile',
+sp_oauth = oauth2.SpotifyOAuth(
 									scope=scopes)
 
 @main.route('/')
