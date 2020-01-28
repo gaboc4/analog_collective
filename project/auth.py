@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required
 from .models import Users
 from . import db
+from .helpers import get_auth_url
 
 auth = Blueprint('auth', __name__)
 
@@ -28,6 +29,9 @@ def login_post():
 
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
+    if user.spot_auth is False:
+        auth_url = get_auth_url()
+        return redirect(auth_url)
     return redirect(url_for('main.profile'))
 
 @auth.route('/signup')
@@ -51,7 +55,7 @@ def signup_post():
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
     new_user = Users(email=email, first_name=first_name, last_name=last_name, user_type=user_type,
-    password=generate_password_hash(password, method='sha256'))
+    password=generate_password_hash(password, method='sha256'), spot_auth=False)
 
     # add the new user to the database
     db.session.add(new_user)

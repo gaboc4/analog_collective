@@ -9,8 +9,10 @@
   {% for link in playlist_links %}
     <p>{{link}}</p>
   {% endfor %}
+<p>Add another playlist here!</p>
 {% else %}
 <p>No playlists yet, add one here!</p>
+{% endif %}
 <form method="POST" action="/check_playlist">
   <div class="field has-addons">
     <div class="control">
@@ -23,6 +25,9 @@
     </div>
   </div>
 </form>
+
+{% if too_short %}
+  <h3> The playlist you submitted does not have enough followers.</h3>
 {% endif %}
 
 {% endblock %}

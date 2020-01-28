@@ -1,14 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if auth_url %}
-<h1 class="title">
-  You must authorize Spotify before continuing:
-</h1>
-<a class="button" href={{auth_url}}>Authorize</a>
-{% elif user_type == 1 %}
+{% if user_type == 1 %}
     {% include 'playlister_profile.html' %}
-{% elif user_type == 2 %}
+{% else %}
     {% include 'artist_profile.html' %}
 {% endif %}
 
