@@ -1,5 +1,5 @@
 # models.py
-
+from datetime import datetime
 from flask_login import UserMixin
 from . import db
 
@@ -24,14 +24,19 @@ class PlaylistDetails(UserMixin, db.Model):
     num_followers = db.Column(db.Integer)
     num_tracks = db.Column(db.Integer)
     placement_rate = db.Column(db.Integer)
+    genre = db.Column(db.String(1000))
+    last_updated = db.Column(db.DateTime)
 
-    def __init__(self, user_id, name, playlist_uri, num_followers, num_tracks, placement_rate):
+    def __init__(self, user_id, name, playlist_uri, num_followers, num_tracks, placement_rate,
+                    genre):
         self.user_id = user_id
         self.name = name
         self.playlist_uri = playlist_uri
         self.num_followers = num_followers
         self.num_tracks = num_tracks
         self.placement_rate = placement_rate
+        self.genre = genre
+        self.last_updated = datetime.now()
 
 class SpotifyToken(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

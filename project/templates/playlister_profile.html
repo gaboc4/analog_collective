@@ -5,10 +5,29 @@
   You're a Playlister!
 </h1>
 
-{% if playlist_links|length != 0 %}
-  {% for link in playlist_links %}
-    <p>{{link}}</p>
-  {% endfor %}
+{% if playlist_dict|length != 0 %}
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+  <thead>
+    <tr>
+      <th>Playlist Name</th>
+      <th>Playlist URI</th>
+      <th>Number of Followers</th>
+      <th>Number of Tracks</th>
+      <th>Placement Rate</th>
+      <th>Genre</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for playlist in playlist_dict %}
+      <td>{{playlist.name}}</td>
+      <td>{{playlist.playlist_uri}}</td>
+      <td>{{playlist.num_followers}}</td>
+      <td>{{playlist.num_tracks}}</td>
+      <td>{{playlist.placement_rate}}</td>
+      <td>{{playlist.genre}}</td>
+    {% endfor %}
+  </tbody>
+</table>
 <p>Add another playlist here!</p>
 {% else %}
 <p>No playlists yet, add one here!</p>

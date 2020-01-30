@@ -7,7 +7,7 @@ import spotipy
 import spotipy.util as util
 from spotipy import oauth2
 import os
-from .helpers import refresh_access_token, get_access_and_refresh
+from .helpers import refresh_access_token, get_access_and_refresh, get_playlist_genre
 
 main = Blueprint('main', __name__)
 
@@ -44,9 +44,9 @@ def profile():
 		db.session.commit()
 
 	sp = spotipy.Spotify(auth=access_token)
-	playlist_links = [playlist.playlist_uri for playlist in PlaylistDetails.query.filter_by(user_id=user.id).all()]
+	playlist_dict = PlaylistDetails.query.filter_by(user_id=user.id).all()
 	return render_template('default_profile.html', name=current_user.first_name, user_type=user.user_type,
-							playlist_links=playlist_links, too_short=plist.too_short)
+							playlist_dict=playlist_dict, too_short=plist.too_short)
 
 
 @main.route('/check_playlist', methods=['POST'])
@@ -61,8 +61,10 @@ def check_playlist():
 		return redirect(url_for('main.profile'))
 
 	if PlaylistDetails.query.filter_by(playlist_uri=uri).first() is None:
+		overall_genre = get_playlist_genre([track['track']['artists'][0]['uri'] for 
+											track in playlist['tracks']['items']], sp)
 		playlist_details = PlaylistDetails(user.id, playlist['name'], uri, playlist['followers']['total'], 
-											len(playlist['tracks']['items']), 0)
+											len(playlist['tracks']['items']), 0, overall_genre)
 		db.session.add(playlist_details)
 		db.session.commit()
 
