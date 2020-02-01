@@ -1,7 +1,65 @@
-
+{% extends "base.html" %}
 {% block content %}
+
 <h1 class="title">
-  You're an Artist!
+  Welcome back, {{user_name}}
 </h1>
+
+<form method="POST" action="/song_input">
+  <div class="field">
+      <div class="control">
+          <input class="input " type="text" name="song_uri" 
+                  placeholder="Song URI" autofocus="" required>
+      </div>
+  </div>
+
+  <div class="field">
+      <div class="control">
+          <input class="input" type="text" name="similar_artist1" 
+                  placeholder="Similar Artist" autofocus="" required>
+      </div>
+  </div>
+
+  <div class="field">
+    <div class="control">
+        <input class="input" type="text" name="similar_artist2" 
+                placeholder="Similar Artist" autofocus="" required>
+    </div>
+</div>
+
+<div class="field">
+  <div class="control">
+      <input class="input" type="text" name="similar_artist3" 
+              placeholder="Similar Artist" autofocus="" required>
+  </div>
+</div>
+
+<div class="field">
+  <div class="control">
+      <input class="input" type="text" name="similar_artist4" 
+              placeholder="Similar Artist" autofocus="" required>
+  </div>
+</div>
+
+<div class="field">
+  <div class="control">
+      <input class="input" type="text" name="similar_artist5" 
+              placeholder="Similar Artist" autofocus="" required>
+  </div>
+</div>
+
+<div class="field">
+  <div class="control">
+      <input class="input" type="text" name="song_description" 
+              placeholder="Optional Song Description" autofocus="">
+  </div>
+</div>
+
+  <button class="button is-block is-info is-fullwidth">Sumit</button>
+</form>
+
+<iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd" width="300" height="380" frameborder="0" 
+allowtransparency="true" allow="encrypted-media"></iframe>
+        
 
 {% endblock %}

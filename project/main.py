@@ -11,11 +11,6 @@ from .helpers import refresh_access_token, get_access_and_refresh, get_playlist_
 
 main = Blueprint('main', __name__)
 
-class PlaylistClass:
-	def __init__(self, too_short):
-		self.too_short = too_short
-plist = PlaylistClass(False)
-
 @main.route('/')
 def index():
     return render_template('index.html')
@@ -44,20 +39,30 @@ def profile():
 		db.session.commit()
 
 	sp = spotipy.Spotify(auth=access_token)
+	if user.user_type == 1:
+		return redirect(url_for('main.playlister_profile'))
+	elif user.user_type == 2:
+		return redirect(url_for('main.artist_profile'))
+
+
+@main.route('/playlister_profile')
+@login_required
+def playlister_profile():
+	user = Users.query.filter_by(email=current_user.email).first()
 	playlist_dict = PlaylistDetails.query.filter_by(user_id=user.id).all()
-	return render_template('default_profile.html', name=current_user.first_name, user_type=user.user_type,
-							playlist_dict=playlist_dict, too_short=plist.too_short)
+	return render_template('playlister_profile.html', name=current_user.first_name,
+							playlist_dict=playlist_dict)
 
-
-@main.route('/check_playlist', methods=['POST'])
+@main.route('/playlister_profile', methods=['POST'])
 @login_required
 def check_playlist():
+	user = Users.query.filter_by(email=current_user.email).first()
 	user = Users.query.filter_by(email=current_user.email).first()
 	uri = request.form.get('playlist_uri')
 	playlist = sp.playlist(playlist_id=uri, fields='name,followers,tracks')
 	playlist_links = [playlist.playlist_uri for playlist in PlaylistDetails.query.filter_by(user_id=user.id).all()]
 	if (playlist['followers']['total']) < 750:
-		plist.too_short = True
+		plist_too_short = True
 		return redirect(url_for('main.profile'))
 
 	if PlaylistDetails.query.filter_by(playlist_uri=uri).first() is None:
@@ -75,7 +80,38 @@ def check_playlist():
 			db.session.add(artist_in_paylist)
 			db.session.commit()
 	playlist_links = PlaylistDetails.query.filter_by(user_id=user.id).all()
-	plist.too_short = False
-	return redirect(url_for('main.profile'))
+	plist_too_short = False
+	return render_template('playlister_profile.html', name=current_user.first_name, too_short=plist_too_short,
+							playlist_dict=playlist_dict)
 
-    
+
+@main.route('/artist_profile')
+@login_required
+def artist_profile():
+	user = Users.query.filter_by(email=current_user.email).first()
+	return render_template('artist_profile.html', user_name=user.first_name) 
+
+@main.route('/artist_profile', methods=['POST'])
+@login_required
+def artist_song():
+	song_uri = request.form.get('song_uri')
+	artist_uris = [request.form.get('similar_artist1_uri'), 
+					request.form.get('similar_artist2_uri'), 
+					request.form.get('similar_artist3_uri'),
+					request.form.get('similar_artist4_uri'), 
+					request.form.get('similar_artist5_uri')]
+	song_description = request.form.get('song_description')
+
+	song_details = sp.track(song_uri)
+	song_artist_name = song_details['artists'][0]['name']
+	song_artist_uri = song_details['artists'][0]['uri']
+	song_img = song_details['images'][2]['url']
+
+	genres = [sp.artists(artist_uri)['genres'] for artist_uri in artist_uris]
+	genres = [genre for sublist in genres for genre in sublist]
+	similar_playlists = PlaylistDetails.query.filter_by(PlaylistDetails.genre.in_(genres)).all()
+	print(similar_playlists)
+
+	# playlist_embed_links = [f"https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd"]
+	return render_template('artist_profile.html')
+	
