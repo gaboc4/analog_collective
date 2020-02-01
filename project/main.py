@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from .models import Users, PlaylistDetails, SpotifyToken, ArtistsInPlaylist
 from . import db
 import sys
+import re
 import spotipy
 import spotipy.util as util
 from spotipy import oauth2
@@ -19,7 +20,6 @@ def index():
 @main.route('/profile')
 @login_required
 def profile():
-	global sp
 	user = Users.query.filter_by(email=current_user.email).first()
 	code = request.args.get('code')
 
@@ -38,7 +38,6 @@ def profile():
 		user_spot_info.access_token = access_token
 		db.session.commit()
 
-	sp = spotipy.Spotify(auth=access_token)
 	if user.user_type == 1:
 		return redirect(url_for('main.playlister_profile'))
 	elif user.user_type == 2:
@@ -57,13 +56,16 @@ def playlister_profile():
 @login_required
 def check_playlist():
 	user = Users.query.filter_by(email=current_user.email).first()
-	user = Users.query.filter_by(email=current_user.email).first()
 	uri = request.form.get('playlist_uri')
+
+	access_token = SpotifyToken.query.filter_by(user_id=user.id).first().access_token
+	sp = spotipy.Spotify(auth=access_token)
 	playlist = sp.playlist(playlist_id=uri, fields='name,followers,tracks')
+	
 	playlist_links = [playlist.playlist_uri for playlist in PlaylistDetails.query.filter_by(user_id=user.id).all()]
 	if (playlist['followers']['total']) < 750:
-		plist_too_short = True
-		return redirect(url_for('main.profile'))
+		return render_template('playlister_profile.html', name=current_user.first_name, too_short=True,
+							playlist_dict=PlaylistDetails.query.filter_by(user_id=user.id).all())
 
 	if PlaylistDetails.query.filter_by(playlist_uri=uri).first() is None:
 		overall_genre = get_playlist_genre([track['track']['artists'][0]['uri'] for 
@@ -76,13 +78,12 @@ def check_playlist():
 		for track in playlist['tracks']['items']:
 			artist_name = track['track']['artists'][0]['name']
 			artist_in_paylist = ArtistsInPlaylist(PlaylistDetails.query.filter_by(playlist_uri=uri).first().id, 
-													artist_name=artist_name)
+													artist_name=re.sub('[^A-Za-z0-9]+', ' ', artist_name))
 			db.session.add(artist_in_paylist)
 			db.session.commit()
-	playlist_links = PlaylistDetails.query.filter_by(user_id=user.id).all()
-	plist_too_short = False
-	return render_template('playlister_profile.html', name=current_user.first_name, too_short=plist_too_short,
-							playlist_dict=playlist_dict)
+	# playlist_links = PlaylistDetails.query.filter_by(user_id=user.id).all()
+	return render_template('playlister_profile.html', name=current_user.first_name, too_short=False,
+							playlist_dict=PlaylistDetails.query.filter_by(user_id=user.id).all())
 
 
 @main.route('/artist_profile')
@@ -94,6 +95,10 @@ def artist_profile():
 @main.route('/artist_profile', methods=['POST'])
 @login_required
 def artist_song():
+	user = Users.query.filter_by(email=current_user.email).first()
+	access_token = SpotifyToken.query.filter_by(user_id=user.id).first().access_token
+	sp = spotipy.Spotify(auth=access_token)
+
 	song_uri = request.form.get('song_uri')
 	artist_uris = [request.form.get('similar_artist1_uri'), 
 					request.form.get('similar_artist2_uri'), 

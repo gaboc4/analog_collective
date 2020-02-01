@@ -1,6 +1,7 @@
 import spotipy
 import spotipy.util as util
 import os
+import numpy as np
 from spotipy import oauth2
 
 from .models import Users, SpotifyToken
@@ -26,8 +27,11 @@ def refresh_access_token(refresh_token):
     return token
 
 def get_playlist_genre(artist_list, sp):
-    artists = sp.artists(artist_list)['artists']
-    artist_genres = [artist['genres'] for artist in artists]
+    artist_list = np.array_split(artist_list, 5)
+    artists = []
+    for artist in artist_list:
+        artists += sp.artists(artist)['artists']
+    artist_genres = [artist['genres'] for artist in artists if artist is not None]
     artist_genres = [genre for sublist in artist_genres for genre in sublist]
     genre_dict = {}
     for genre in artist_genres:

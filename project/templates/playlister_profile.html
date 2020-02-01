@@ -19,12 +19,14 @@
   </thead>
   <tbody>
     {% for playlist in playlist_dict %}
+    <tr>
       <td>{{playlist.name}}</td>
       <td>{{playlist.playlist_uri}}</td>
       <td>{{playlist.num_followers}}</td>
       <td>{{playlist.num_tracks}}</td>
       <td>{{playlist.placement_rate}}</td>
       <td>{{playlist.genre}}</td>
+    </tr>
     {% endfor %}
   </tbody>
 </table>
@@ -32,7 +34,7 @@
 {% else %}
 <p>No playlists yet, add one here!</p>
 {% endif %}
-<form method="POST" action="/check_playlist">
+<form method="POST" action="/playlister_profile">
   <div class="field has-addons">
     <div class="control">
       <input class="input" type="text" name="playlist_uri" placeholder="Your Playlist URI">
