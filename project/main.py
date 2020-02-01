@@ -109,7 +109,8 @@ def artist_song():
 	try:
 		song_details = sp.track(song_uri)
 	except spotipy.client.SpotifyException as e:
-		return render_template('artist_profile.html', exception="There was an issue retrieving your \
+		return render_template('artist_profile.html', user_name=user.first_name,
+														exception="There was an issue retrieving your \
 																requested track from Spotify, please \
 																check your URI, make sure it is a track \
 																link not an album one and try again")
@@ -117,14 +118,23 @@ def artist_song():
 	song_artist_uri = song_details['artists'][0]['uri']
 	song_img = song_details['album']['images'][2]['url']
 
-	all_artists = sp.artists(artist_uris)['artists']
+	try:
+		all_artists = sp.artists(artist_uris)['artists']
+	except spotipy.client.SpotifyException as e:
+		return render_template('artist_profile.html', user_name=user.first_name,
+														exception="There was an issue retrieving your similar \
+																	artrists from Spotify, please make sure \
+																		your URIs are correct and try again.")
+	
 	genres = [artist['genres'] for artist in all_artists]
 	genres = [genre for sublist in genres for genre in sublist]
 
 	similar_playlists = PlaylistDetails.query.filter(PlaylistDetails.genre.in_(genres)).all()
-	similar_playlist_uris = [playlist.playlist_uri for playlist in similar_playlists]
-	print(similar_playlist_uris)
+	similar_playlist_ids = [playlist.playlist_uri.split(':')[2] for playlist in similar_playlists]
+	playlist_embed_urls = ["https://open.spotify.com/embed/playlist/%s" % p_id for p_id in similar_playlist_ids]
 
-	# playlist_embed_links = [f"https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd"]
-	return render_template('artist_profile.html', song_img=song_img)
+	
+
+	return render_template('artist_profile.html', song_img=song_img, playlist_embed_urls=playlist_embed_urls,
+								user_name=user.first_name)
 	

@@ -2,7 +2,7 @@
 {% block content %}
 
 <h1 class="title">
-  Welcome back, {{user_name}}
+  Welcome back, {{user_name}}!
 </h1>
 
 {% if exception %}
@@ -66,8 +66,11 @@
 <img src="{{song_img}}">
 {% endif %}
 
-<iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd" width="300" height="380" frameborder="0" 
-allowtransparency="true" allow="encrypted-media"></iframe>
-        
+{% if playlist_embed_urls %}
+  {% for url in playlist_embed_urls %}
+    <iframe src={{url}} width="300" height="380" frameborder="0" 
+    allowtransparency="true" allow="encrypted-media"></iframe>
+  {% endfor %}
+{% endif %}        
 
 {% endblock %}
