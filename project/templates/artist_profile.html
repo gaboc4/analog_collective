@@ -5,7 +5,11 @@
   Welcome back, {{user_name}}
 </h1>
 
-<form method="POST" action="/song_input">
+{% if exception %}
+<p>{{exception}}</p>
+{% endif %}
+
+<form method="POST" action="/artist_profile">
   <div class="field">
       <div class="control">
           <input class="input " type="text" name="song_uri" 
@@ -15,35 +19,35 @@
 
   <div class="field">
       <div class="control">
-          <input class="input" type="text" name="similar_artist1" 
+          <input class="input" type="text" name="similar_artist1_uri" 
                   placeholder="Similar Artist" autofocus="" required>
       </div>
   </div>
 
   <div class="field">
     <div class="control">
-        <input class="input" type="text" name="similar_artist2" 
+        <input class="input" type="text" name="similar_artist2_uri" 
                 placeholder="Similar Artist" autofocus="" required>
     </div>
 </div>
 
 <div class="field">
   <div class="control">
-      <input class="input" type="text" name="similar_artist3" 
+      <input class="input" type="text" name="similar_artist3_uri" 
               placeholder="Similar Artist" autofocus="" required>
   </div>
 </div>
 
 <div class="field">
   <div class="control">
-      <input class="input" type="text" name="similar_artist4" 
+      <input class="input" type="text" name="similar_artist4_uri" 
               placeholder="Similar Artist" autofocus="" required>
   </div>
 </div>
 
 <div class="field">
   <div class="control">
-      <input class="input" type="text" name="similar_artist5" 
+      <input class="input" type="text" name="similar_artist5_uri" 
               placeholder="Similar Artist" autofocus="" required>
   </div>
 </div>
@@ -57,6 +61,10 @@
 
   <button class="button is-block is-info is-fullwidth">Sumit</button>
 </form>
+
+{% if song_img %}
+<img src="{{song_img}}">
+{% endif %}
 
 <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd" width="300" height="380" frameborder="0" 
 allowtransparency="true" allow="encrypted-media"></iframe>
