@@ -40,6 +40,9 @@
           {% if song_img %}
           <img src="{{song_img}}">
           {% endif %}
+          {% if song_description %}
+          <p>{{song_description}}</p>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -51,8 +54,8 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Current Songs and Related Artists</h5>
-          {% if tracks_and_artists %}
-            <table class="table">
+          {% if tracks and related_artists %}
+            <table class="table curr-artist-card">
               <thead>
                 <tr>
                   <th scope="col">Track Name</th>
@@ -64,15 +67,19 @@
               <tbody>
                 {% for track in tracks %}
                 <tr>
-                  <td scope="row">{{track.track_name}}</td>
-                  <td>{{track.track_summary}}</td>
-                  <td>{{track.playlist}}</td>
-                </tr>
-                {% endfor %}
+                  {% for key in track %}
+                    {% if key.startswith('track_link') %}
+                      <td><a href="{{track[key]}}" target="_blank">Link to Track</a></td>
+                    {% else %}
+                      <td style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
+                    {% endif %}
+                  {% endfor %}
+              </tr>
+              {% endfor %}
               </tbody>
             </table>
 
-            <table class="table">
+            <table class="table curr-artist-card">
               <thead>
                 <tr>
                   <th scope="col">Related Artist 1</th>
@@ -83,15 +90,11 @@
                 </tr>
               </thead>
               <tbody>
-                {% for ra in related_artists %}
                 <tr>
-                  <td>{{ra.similar_artist_1}}</td>
-                  <td>{{ra.similar_artist_2}}</td>
-                  <td>{{ra.similar_artist_3}}</td>
-                  <td>{{ra.similar_artist_4}}</td>
-                  <td>{{ra.similar_artist_5}}</td>
+                  {% for key in related_artists %}
+                  <td>{{related_artists[key]}}</td>
+                  {% endfor %}
                 </tr>
-                {% endfor %}
               </tbody>
             </table>
             {% else %}

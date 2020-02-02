@@ -3,8 +3,9 @@ import spotipy.util as util
 import os
 import numpy as np
 from spotipy import oauth2
+from collections import OrderedDict
 
-from .models import Users, SpotifyToken
+from .models import Users, SpotifyToken, SimilarArtists, ArtistTracks, PlaylistDetails
 
 scopes = 'playlist-modify-public'
 sp_oauth = oauth2.SpotifyOAuth(client_id=os.environ['CLIENT_ID'], 
@@ -42,4 +43,28 @@ def get_playlist_genre(artist_list, sp):
     return max(genre_dict, key=genre_dict.get)
 
 
-        
+def get_curr_similar_artists(user_id, sp):
+    sa = SimilarArtists.query.filter_by(artist_id=user_id).first()
+    if sa is not None:
+        return {'similar_artist_1': sp.artist(sa.similar_artist_1)['name'], 
+                'similar_artist_2': sp.artist(sa.similar_artist_2)['name'], 
+                'similar_artist_3': sp.artist(sa.similar_artist_3)['name'], 
+                'similar_artist_4': sp.artist(sa.similar_artist_4)['name'], 
+                'similar_artist_5': sp.artist(sa.similar_artist_5)['name']}
+    else:
+        return None
+
+def get_curr_artist_tracks(user_id):
+    tracks = ArtistTracks.query.filter_by(artist_id=user_id).all()
+    final_list_of_tracks = []
+    for track in tracks:
+        track_dict = OrderedDict()
+        track_dict['track_name'] = track.track_name
+        track_dict['track_link'] = track.track_link
+        track_dict['track_summary'] = track.track_summary
+        if track.placed_playlist_id is None:
+            track_dict['playlist'] = ""
+        else:
+            track_dict['playlist'] = PlaylistDetails.query.filter_by(id=track.placed_playlist_id).first().name
+        final_list_of_tracks.append(track_dict)
+    return final_list_of_tracks
