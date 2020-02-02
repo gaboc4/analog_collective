@@ -11,9 +11,8 @@
   <p>{{exception}}</p>
   {% endif %}
 
-
   <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-4">
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">New Song Input</h5>
@@ -22,27 +21,14 @@
       </div>
     </div>
     {% if playlist_embed_urls %}
-    <div class="col-sm-3">
+    <div class="col-sm-8">
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Related Playlists</article>
             {% for url in playlist_embed_urls %}
-              <iframe src={{url}} width="300" height="380" frameborder="0" 
+              <iframe src={{url}} width="200" height="300" frameborder="0" 
               allowtransparency="true" allow="encrypted-media"></iframe>
             {% endfor %}
-        </div>
-      </div>
-    </div>
-      <div class="col-sm-3">
-        <div class="card">
-          <div class="card-body">
-          <article class="title has-text-black">Song Details</article>
-          {% if song_img %}
-          <img src="{{song_img}}">
-          {% endif %}
-          {% if song_description %}
-          <p>{{song_description}}</p>
-          {% endif %}
         </div>
       </div>
     </div>
@@ -103,6 +89,19 @@
         </div>
       </div>
     </div>
+    {% if song_img %}
+    <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Song Details</h5>
+            <img src="{{song_img}}">
+            {% if song_description %}
+            <p>{{song_description}}</p>
+            {% endif %}
+          </div>
+        </div>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
