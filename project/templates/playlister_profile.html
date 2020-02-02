@@ -1,54 +1,59 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1 class="title">
-  You're a Playlister!
-</h1>
-
-{% if playlist_dict|length != 0 %}
-<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
-  <thead>
-    <tr>
-      <th>Playlist Name</th>
-      <th>Playlist URI</th>
-      <th>Number of Followers</th>
-      <th>Number of Tracks</th>
-      <th>Placement Rate</th>
-      <th>Genre</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for playlist in playlist_dict %}
-    <tr>
-      <td>{{playlist.name}}</td>
-      <td>{{playlist.playlist_uri}}</td>
-      <td>{{playlist.num_followers}}</td>
-      <td>{{playlist.num_tracks}}</td>
-      <td>{{playlist.placement_rate}}</td>
-      <td>{{playlist.genre}}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<p>Add another playlist here!</p>
-{% else %}
-<p>No playlists yet, add one here!</p>
-{% endif %}
-<form method="POST" action="/playlister_profile">
-  <div class="field has-addons">
-    <div class="control">
-      <input class="input" type="text" name="playlist_uri" placeholder="Your Playlist URI">
-    </div>
-    <div class="control">
-      <button class="button is-info">
-        Search
-      </button>
+<div class="body-margin">
+  <h1 class="title">
+    Welcome back, {{name}}!
+  </h1>
+  <!-- is-bordered is-striped is-narrow is-hoverable is-fullwidth -->
+  {% if playlist_dict|length != 0 %}
+  <table class="table body-margin">
+    <thead>
+      <tr>
+        <th scope="col">Playlist Name</th>
+        <th scope="col">Playlist URI</th>
+        <th scope="col">Number of Followers</th>
+        <th scope="col">Number of Tracks</th>
+        <th scope="col">Placement Rate</th>
+        <th scope="col">Genre</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for playlist in playlist_dict %}
+      <tr>
+        <td scope="row">{{playlist.name}}</td>
+        <td>{{playlist.playlist_uri}}</td>
+        <td>{{playlist.num_followers}}</td>
+        <td>{{playlist.num_tracks}}</td>
+        <td>{{playlist.placement_rate}}</td>
+        <td>{{playlist.genre}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  {% else %}
+  <p>No playlists yet, add one here!</p>
+  {% endif %}
+  <div class="body-margin">
+    <div class="card">
+      <div class="card-body">
+          <h5 class="card-title">Add another playlist here!</h5>
+          <form method="POST" action="/playlister_profile">
+            <div class="form-group">
+                <input class="form-control" type="text" name="playlist_uri" placeholder="Your Playlist URI">
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                  Search
+                </button>
+              </div>
+            </div>
+          </form>
+      </div>
     </div>
   </div>
-</form>
-
-{% if too_short %}
-  <h3> The playlist you submitted does not have enough followers.</h3>
-{% endif %}
-
+  {% if too_short %}
+    <h3> The playlist you submitted does not have enough followers.</h3>
+  {% endif %}
+</div>
 {% endblock %}

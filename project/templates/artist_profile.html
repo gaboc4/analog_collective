@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block content %}
 
 <h1 class="title">
@@ -9,68 +10,95 @@
 <p>{{exception}}</p>
 {% endif %}
 
-<form method="POST" action="/artist_profile">
-  <div class="field">
-      <div class="control">
-          <input class="input " type="text" name="song_uri" 
-                  placeholder="Song URI" autofocus="" required>
-      </div>
-  </div>
 
-  <div class="field">
-      <div class="control">
-          <input class="input" type="text" name="similar_artist1_uri" 
-                  placeholder="Similar Artist" autofocus="" required>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">New Song Input</h5>
+        {% include 'song_form.html' %}
       </div>
-  </div>
-
-  <div class="field">
-    <div class="control">
-        <input class="input" type="text" name="similar_artist2_uri" 
-                placeholder="Similar Artist" autofocus="" required>
     </div>
+  </div>
+  {% if playlist_embed_urls %}
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Related Playlists</article>
+          {% for url in playlist_embed_urls %}
+            <iframe src={{url}} width="300" height="380" frameborder="0" 
+            allowtransparency="true" allow="encrypted-media"></iframe>
+          {% endfor %}
+      </div>
+    </div>
+  </div>
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+        <article class="title has-text-black">Song Details</article>
+        {% if song_img %}
+        <img src="{{song_img}}">
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}  
 </div>
 
-<div class="field">
-  <div class="control">
-      <input class="input" type="text" name="similar_artist3_uri" 
-              placeholder="Similar Artist" autofocus="" required>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Current Songs and Related Artists</h5>
+        {% if tracks_and_artists %}
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Track Name</th>
+                <th scope="col">Track Link</th>
+                <th scope="col">Description</th>
+                <th scope="col">Placed Playlist</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for track in tracks %}
+              <tr>
+                <td scope="row">{{track.track_name}}</td>
+                <td>{{track.track_summary}}</td>
+                <td>{{track.playlist}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Related Artist 1</th>
+                <th scope="col">Related Artist 2</th>
+                <th scope="col">Related Artist 3</th>
+                <th scope="col">Related Artist 4</th>
+                <th scope="col">Related Artist 5</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ra in related_artists %}
+              <tr>
+                <td>{{ra.similar_artist_1}}</td>
+                <td>{{ra.similar_artist_2}}</td>
+                <td>{{ra.similar_artist_3}}</td>
+                <td>{{ra.similar_artist_4}}</td>
+                <td>{{ra.similar_artist_5}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <p>You have no tracks or related artists in the system, add some to the left!</p>
+          {% endif %}
+      </div>
+    </div>
   </div>
 </div>
-
-<div class="field">
-  <div class="control">
-      <input class="input" type="text" name="similar_artist4_uri" 
-              placeholder="Similar Artist" autofocus="" required>
-  </div>
-</div>
-
-<div class="field">
-  <div class="control">
-      <input class="input" type="text" name="similar_artist5_uri" 
-              placeholder="Similar Artist" autofocus="" required>
-  </div>
-</div>
-
-<div class="field">
-  <div class="control">
-      <input class="input" type="text" name="song_description" 
-              placeholder="Optional Song Description" autofocus="">
-  </div>
-</div>
-
-  <button class="button is-block is-info is-fullwidth">Sumit</button>
-</form>
-
-{% if song_img %}
-<img src="{{song_img}}">
-{% endif %}
-
-{% if playlist_embed_urls %}
-  {% for url in playlist_embed_urls %}
-    <iframe src={{url}} width="300" height="380" frameborder="0" 
-    allowtransparency="true" allow="encrypted-media"></iframe>
-  {% endfor %}
-{% endif %}        
 
 {% endblock %}

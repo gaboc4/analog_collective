@@ -3,35 +3,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="column is-4 is-offset-4">
-    <h3 class="title">Login</h3>
-    <div class="box">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="notification is-danger">
-                {{ messages[0] }}
-            </div>
-        {% endif %}
-        {% endwith %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+        <strong class="mr-auto">Incorrect Username or Password</strong>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="toast-body">
+        {{ messages[0] }}
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Login</h5>
+        
         <form method="POST" action="/login">
-            <div class="field">
-                <div class="control">
-                    <input class="input is-large" type="email" name="email" placeholder="Your Email" autofocus="">
-                </div>
+            <div class="form-group">
+                <input class="fomr-control" type="email" name="email" 
+                        placeholder="Email" autofocus="" required>
             </div>
 
-            <div class="field">
-                <div class="control">
-                    <input class="input is-large" type="password" name="password" placeholder="Your Password">
-                </div>
+        
+            <div class="form-group">
+                <input class="fomr-control" type="password" name="password" 
+                        placeholder="Password" autofocus="" required>
             </div>
-            <div class="field">
-                <label class="checkbox">
-                    <input type="checkbox">
-                    Remember me
-                </label>
-            </div>
-            <button class="button is-block is-info is-large is-fullwidth">Login</button>
+
+            <button class="btn btn-primary">Login</button>
         </form>
     </div>
 </div>
