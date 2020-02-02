@@ -20,23 +20,19 @@
 {% endif %}
 {% endwith %}
 
-<div class="card">
+<div class="card login-width body-margin">
     <div class="card-body">
         <h5 class="card-title">Login</h5>
-        
         <form method="POST" action="/login">
             <div class="form-group">
-                <input class="fomr-control" type="email" name="email" 
+                <input class="form-control" type="email" name="email" 
                         placeholder="Email" autofocus="" required>
             </div>
-
-        
             <div class="form-group">
-                <input class="fomr-control" type="password" name="password" 
+                <input class="form-control" type="password" name="password" 
                         placeholder="Password" autofocus="" required>
             </div>
-
-            <button class="btn btn-primary">Login</button>
+            <button class="btn btn-primary" style="margin-top: 10px;">Login</button>
         </form>
     </div>
 </div>

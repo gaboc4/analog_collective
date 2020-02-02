@@ -2,103 +2,104 @@
 
 {% block content %}
 
-<h1 class="title">
-  Welcome back, {{user_name}}!
-</h1>
+<div class="body-margin">
+  <h1 class="title">
+    Welcome back, {{user_name}}!
+  </h1>
 
-{% if exception %}
-<p>{{exception}}</p>
-{% endif %}
+  {% if exception %}
+  <p>{{exception}}</p>
+  {% endif %}
 
 
-<div class="row">
-  <div class="col-sm-6">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">New Song Input</h5>
-        {% include 'song_form.html' %}
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">New Song Input</h5>
+          {% include 'song_form.html' %}
+        </div>
       </div>
     </div>
-  </div>
-  {% if playlist_embed_urls %}
-  <div class="col-sm-3">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Related Playlists</article>
-          {% for url in playlist_embed_urls %}
-            <iframe src={{url}} width="300" height="380" frameborder="0" 
-            allowtransparency="true" allow="encrypted-media"></iframe>
-          {% endfor %}
-      </div>
-    </div>
-  </div>
+    {% if playlist_embed_urls %}
     <div class="col-sm-3">
       <div class="card">
         <div class="card-body">
-        <article class="title has-text-black">Song Details</article>
-        {% if song_img %}
-        <img src="{{song_img}}">
-        {% endif %}
+          <h5 class="card-title">Related Playlists</article>
+            {% for url in playlist_embed_urls %}
+              <iframe src={{url}} width="300" height="380" frameborder="0" 
+              allowtransparency="true" allow="encrypted-media"></iframe>
+            {% endfor %}
+        </div>
       </div>
     </div>
-  </div>
-  {% endif %}  
-</div>
-
-<div class="row">
-  <div class="col-sm-6">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Current Songs and Related Artists</h5>
-        {% if tracks_and_artists %}
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Track Name</th>
-                <th scope="col">Track Link</th>
-                <th scope="col">Description</th>
-                <th scope="col">Placed Playlist</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for track in tracks %}
-              <tr>
-                <td scope="row">{{track.track_name}}</td>
-                <td>{{track.track_summary}}</td>
-                <td>{{track.playlist}}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Related Artist 1</th>
-                <th scope="col">Related Artist 2</th>
-                <th scope="col">Related Artist 3</th>
-                <th scope="col">Related Artist 4</th>
-                <th scope="col">Related Artist 5</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ra in related_artists %}
-              <tr>
-                <td>{{ra.similar_artist_1}}</td>
-                <td>{{ra.similar_artist_2}}</td>
-                <td>{{ra.similar_artist_3}}</td>
-                <td>{{ra.similar_artist_4}}</td>
-                <td>{{ra.similar_artist_5}}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          {% else %}
-          <p>You have no tracks or related artists in the system, add some to the left!</p>
+      <div class="col-sm-3">
+        <div class="card">
+          <div class="card-body">
+          <article class="title has-text-black">Song Details</article>
+          {% if song_img %}
+          <img src="{{song_img}}">
           {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}  
+  </div>
+
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Current Songs and Related Artists</h5>
+          {% if tracks_and_artists %}
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Track Name</th>
+                  <th scope="col">Track Link</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Placed Playlist</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for track in tracks %}
+                <tr>
+                  <td scope="row">{{track.track_name}}</td>
+                  <td>{{track.track_summary}}</td>
+                  <td>{{track.playlist}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Related Artist 1</th>
+                  <th scope="col">Related Artist 2</th>
+                  <th scope="col">Related Artist 3</th>
+                  <th scope="col">Related Artist 4</th>
+                  <th scope="col">Related Artist 5</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ra in related_artists %}
+                <tr>
+                  <td>{{ra.similar_artist_1}}</td>
+                  <td>{{ra.similar_artist_2}}</td>
+                  <td>{{ra.similar_artist_3}}</td>
+                  <td>{{ra.similar_artist_4}}</td>
+                  <td>{{ra.similar_artist_5}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <p>You have no tracks or related artists in the system, add some to the left!</p>
+            {% endif %}
+        </div>
       </div>
     </div>
   </div>
 </div>
-
 {% endblock %}

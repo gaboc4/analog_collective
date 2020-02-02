@@ -26,41 +26,39 @@
         
         <form method="POST" action="/signup">
             <div class="form-group">
-                <input class="fomr-control" type="text" name="first_name" 
+                <input class="form-control" type="text" name="first_name" 
                         placeholder="First Name" autofocus="" required>
             </div>
 
         
             <div class="form-group">
-                <input class="fomr-control" type="text" name="last_name" 
+                <input class="form-control" type="text" name="last_name" 
                         placeholder="Last Name" autofocus="" required>
             </div>
 
         
             <div class="form-group">
-                <input class="fomr-control" type="email" name="email" 
+                <input class="form-control" type="email" name="email" 
                         placeholder="Email" autofocus="" required>
             </div>
 
         
             <div class="form-group">
-                <input class="fomr-control" type="password" name="password" 
+                <input class="form-control" type="password" name="password" 
                         placeholder="Password" required>
             </div>
 
 
             <div class="field">
                 <label class="label">Which kind of user are you?</label>
-                <div class="control">
-                <div class="select">
+                <div class="form-control">
                     <select name='user_type'>
-                    <option value="2">Artist</option>
-                    <option value="1">Playlister</option>
+                        <option value="2">Artist</option>
+                        <option value="1">Playlister</option>
                     </select>
                 </div>
-                </div>
             </div>
-            <button class="btn btn-primary">Sign Up</button>
+            <button class="btn btn-primary" style="margin-top: 10px;">Sign Up</button>
         </form>
     </div>
 </div>
