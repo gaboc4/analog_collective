@@ -29,6 +29,28 @@
               <iframe src={{url}} width="200" height="300" frameborder="0" 
               allowtransparency="true" allow="encrypted-media"></iframe>
             {% endfor %}
+            <div class="table-ovflow">
+              <table class="table body-margin table-in-card display" id="similarPlaylists">
+                <thead>
+                  <tr>
+                    <th scope="col">Playlist Name</th>
+                    <th scope="col">Number of Followers</th>
+                    <th scope="col">Number of Tracks</th>
+                    <th scope="col">Genre</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for playlist in playlist_dict %}
+                  <tr>
+                    <td scope="row">{{playlist.name}}</td>
+                    <td>{{playlist.num_followers}}</td>
+                    <td>{{playlist.num_tracks}}</td>
+                    <td>{{playlist.genre}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
         </div>
       </div>
     </div>
@@ -41,29 +63,31 @@
         <div class="card-body">
           <h5 class="card-title">Current Songs and Related Artists</h5>
           {% if tracks and related_artists %}
-            <table class="table curr-artist-card">
-              <thead>
-                <tr>
-                  <th scope="col">Track Name</th>
-                  <th scope="col">Track Link</th>
-                  <th scope="col">Description</th>
-                  <th scope="col">Placed Playlist</th>
+            <div class="table-ovflow">
+              <table class="table table-in-card">
+                <thead>
+                  <tr>
+                    <th scope="col">Track Name</th>
+                    <th scope="col">Track Link</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Placed Playlist</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for track in tracks %}
+                  <tr>
+                    {% for key in track %}
+                      {% if key.startswith('track_link') %}
+                        <td><a href="{{track[key]}}" target="_blank">Link to Track</a></td>
+                      {% else %}
+                        <td style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
+                      {% endif %}
+                    {% endfor %}
                 </tr>
-              </thead>
-              <tbody>
-                {% for track in tracks %}
-                <tr>
-                  {% for key in track %}
-                    {% if key.startswith('track_link') %}
-                      <td><a href="{{track[key]}}" target="_blank">Link to Track</a></td>
-                    {% else %}
-                      <td style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
-                    {% endif %}
-                  {% endfor %}
-              </tr>
-              {% endfor %}
-              </tbody>
-            </table>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
 
             <table class="table curr-artist-card">
               <thead>

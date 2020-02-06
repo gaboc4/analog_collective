@@ -177,7 +177,9 @@ def artist_song():
 		curr_sim_artists.similar_artist_5 = request.form.get('similar_artist5_uri')
 	db.session.commit()
 
+
+
 	return render_template('artist_profile.html', song_img=song_img, song_description=song_description,
 							playlist_embed_urls=playlist_embed_urls, tracks=get_curr_artist_tracks(user.id),
-							related_artists=get_curr_similar_artists(user.id, sp), user_name=user.first_name)
+							related_artists=get_curr_similar_artists(user.id, sp), user_name=user.first_name, playlist_dict=similar_playlists)
 	

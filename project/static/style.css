@@ -1,0 +1,28 @@
+.card {
+  margin: 0 auto; /* Added */
+  float: none; /* Added */
+  margin-bottom: 10px; /* Added */
+}
+
+.body-margin {
+  margin-top: 5%;
+}
+
+.login-width {
+  width:500px;
+}
+
+.table-in-card {
+  max-width: inherit;
+}
+
+.table-ovflow {
+  max-height: 300px;
+  overflow: auto;
+}
+
+@media (min-width: 1200px) {
+  .container{
+      max-width: 1800px;
+  }
+}
