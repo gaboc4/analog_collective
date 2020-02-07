@@ -8,7 +8,7 @@ from collections import OrderedDict
 from .models import Users, SpotifyToken, SimilarArtists, ArtistTracks, PlaylistDetails
 
 scopes = 'playlist-modify-public'
-sp_oauth = oauth2.SpotifyOAuth(client_id=os.environ['CLIENT_ID'], 
+sp_oauth = oauth2.SpotifyOAuth(client_id=os.environ['CLIENT_ID'],
                                     client_secret=os.environ['CLIENT_SECRET'],
                                     redirect_uri=os.environ['REDIRECT_URI'],
                                     scope=scopes)
@@ -43,13 +43,13 @@ def get_playlist_genre(artist_list, sp):
     return max(genre_dict, key=genre_dict.get)
 
 
-def get_curr_similar_artists(user_id, sp):
+def get_curr_sim_artists(user_id, sp):
     sa = SimilarArtists.query.filter_by(artist_id=user_id).first()
     if sa is not None:
-        return {'similar_artist_1': sp.artist(sa.similar_artist_1)['name'], 
-                'similar_artist_2': sp.artist(sa.similar_artist_2)['name'], 
-                'similar_artist_3': sp.artist(sa.similar_artist_3)['name'], 
-                'similar_artist_4': sp.artist(sa.similar_artist_4)['name'], 
+        return {'similar_artist_1': sp.artist(sa.similar_artist_1)['name'],
+                'similar_artist_2': sp.artist(sa.similar_artist_2)['name'],
+                'similar_artist_3': sp.artist(sa.similar_artist_3)['name'],
+                'similar_artist_4': sp.artist(sa.similar_artist_4)['name'],
                 'similar_artist_5': sp.artist(sa.similar_artist_5)['name']}
     else:
         return None

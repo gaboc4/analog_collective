@@ -3,9 +3,19 @@
 {% block content %}
 
 <div class="body-margin">
-  <h1 class="title">
-    Welcome back, {{user_name}}!
-  </h1>
+  <div class="row">
+    <div class="col-sm-6">
+      <h1 class="title">
+        Welcome back, {{user_name}}!
+      </h1>
+    </div>
+    <div class="col-sm-6">
+      <h2 class="title" data-toggle="tooltip" data-placement="left"
+            title="{{tokens_info}}">Tokens: {{user_tokens}}</h2>
+    </div>
+
+  </div>
+
 
   {% if exception %}
   <p>{{exception}}</p>
@@ -24,13 +34,14 @@
     <div class="col-sm-8">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Related Playlists</article>
+          <h5 class="card-title">Related Playlists</h5>
             {% for url in playlist_embed_urls %}
-              <iframe src={{url}} width="200" height="300" frameborder="0" 
+              <iframe src={{url}} width="300" height="250" frameborder="0"
               allowtransparency="true" allow="encrypted-media"></iframe>
             {% endfor %}
             <div class="table-ovflow">
-              <table class="table body-margin table-in-card display" id="similarPlaylists">
+              <table class="table table-in-card display"
+                      id="similarPlaylists">
                 <thead>
                   <tr>
                     <th scope="col">Playlist Name</th>
@@ -54,7 +65,7 @@
         </div>
       </div>
     </div>
-    {% endif %}  
+    {% endif %}
   </div>
 
   <div class="row">

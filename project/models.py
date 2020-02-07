@@ -11,6 +11,7 @@ class Users(UserMixin, db.Model):
     password = db.Column(db.String(1000))
     user_type = db.Column(db.Integer,  db.ForeignKey('user_type.id'))
     spot_auth = db.Column(db.Boolean)
+    tokens = db.Column(db.Integer)
 
 class UserType(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
