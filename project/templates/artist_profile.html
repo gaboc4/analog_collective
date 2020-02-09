@@ -12,9 +12,25 @@
     <div class="col-sm-6">
       <h2 class="title" data-toggle="tooltip" data-placement="left"
             title="{{tokens_info}}">Tokens: {{user_tokens}}</h2>
+      <form method="GET" action="/shop/">
+        <button class="btn btn-primary">Purchase More</button>
+      </form>
     </div>
-
   </div>
+
+  {% if pmnt %}
+  <div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{pmt}}</h4>
+            </div>
+          </div>
+      </div>
+    </div>
+  {% endif %}
 
 
   {% if exception %}
@@ -119,7 +135,7 @@
               </tbody>
             </table>
             {% else %}
-            <p>You have no tracks or related artists in the system, add some to the left!</p>
+            <p>You have no tracks or related artists in the system, add some above!</p>
             {% endif %}
         </div>
       </div>

@@ -148,6 +148,14 @@ def artist_song():
 
 	sp = spotipy.Spotify(auth=access_token)
 
+	if request.form.get('payment_success'):
+		return render_template('artist_profile.html', pmnt=True,
+								user_name=user.first_name,
+								tracks=get_curr_artist_tracks(user.id),
+								user_tokens=user.tokens if user.tokens is not None else 0,
+								tokens_info=tokens_info,
+								related_artists=get_curr_sim_artists(user.id, sp))
+
 	song_uri = request.form.get('song_uri')
 	artist_uris = [request.form.get('similar_artist1_uri'),
 					request.form.get('similar_artist2_uri'),
