@@ -26,3 +26,7 @@
       max-width: 1800px;
   }
 }
+
+.StripeElement {
+  width: 50%;
+}

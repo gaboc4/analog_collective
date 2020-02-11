@@ -1,3 +1,4 @@
 env/
 project/__pycache__
 .vscode
+.idea
