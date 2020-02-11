@@ -9,28 +9,28 @@
         Welcome back, {{user_name}}!
       </h1>
     </div>
-    <div class="col-sm-6">
-      <h2 class="title" data-toggle="tooltip" data-placement="left"
-            title="{{tokens_info}}">Tokens: {{user_tokens}}</h2>
+    <div class="col-sm-2 offset-md-4" style="display: inherit">
+      <h2 class="title" data-toggle="tooltip" data-placement="left" style="margin-left: -20px; margin-right: 20px"
+            title="{{credits_info}}">Tokens: {{user_credits}}</h2>
       <form method="GET" action="/shop/">
-        <button class="btn btn-primary">Purchase More</button>
+        <button class="btn btn-primary" >Purchase More</button>
       </form>
     </div>
   </div>
 
-  {% if pmnt %}
-  <div id="myModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-hidden="true">&times;</button>
-                <h4 class="modal-title">{{pmt}}</h4>
-            </div>
-          </div>
-      </div>
-    </div>
-  {% endif %}
+<!--  {% if pmnt %}-->
+<!--  <div id="myModal" class="modal fade">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <button type="button" class="close" data-dismiss="modal"-->
+<!--                        aria-hidden="true">&times;</button>-->
+<!--                <h4 class="modal-title">{{pmt}}</h4>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  {% endif %}-->
 
 
   {% if exception %}
@@ -56,10 +56,10 @@
               allowtransparency="true" allow="encrypted-media"></iframe>
             {% endfor %}
             <div class="table-ovflow">
-              <table class="table table-in-card display"
-                      id="similarPlaylists">
+              <table class="table table-in-card display" id="similarPlaylists">
                 <thead>
                   <tr>
+                    <th scope="col">id</th>
                     <th scope="col">Playlist Name</th>
                     <th scope="col">Number of Followers</th>
                     <th scope="col">Number of Tracks</th>
@@ -69,7 +69,8 @@
                 <tbody>
                   {% for playlist in playlist_dict %}
                   <tr>
-                    <td scope="row">{{playlist.name}}</td>
+                    <td scope="row">{{playlist.id}}</td>
+                    <td>{{playlist.name}}</td>
                     <td>{{playlist.num_followers}}</td>
                     <td>{{playlist.num_tracks}}</td>
                     <td>{{playlist.genre}}</td>

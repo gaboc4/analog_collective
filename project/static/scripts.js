@@ -3,6 +3,8 @@ $(function () {
   })
 
 $(document).ready(function() {
+console.log('here');
+
     var table = $('#similarPlaylists').DataTable( {
         dom: 'Bfrtip',
         select: {
@@ -12,35 +14,25 @@ $(document).ready(function() {
         searching: false,
         buttons: [
             {
-                text: 'Get selected data',
+                text: 'Add song to playlist',
                 action: function () {
-                    console.log(table.rows( { selected: true } ).data());
+                    console.log(table.rows( { selected: true } ).data()[0][0]);
+
+
+//                      var txt;
+                      if (confirm("Press a button!")) {
+                        txt = "You pressed OK!";
+                      } else {
+                        txt = "You pressed Cancel!";
+                      }
+//                      document.getElementById("demo").innerHTML = txt;
+
                 }
             }
         ]
     } );
-} );
+    table.column( 0 ).visible( false );
 
-// $(document).ready(function() {
-//     var table = $('#tokenOptions').DataTable( {
-//         dom: 'Bfrtip',
-//         select: {
-//           style: 'single'
-//         },
-//         paging: false,
-//         searching: false,
-//         buttons: [
-//             {
-//                 text: 'Add tokens to account',
-//                 action: function () {
-//                     console.log(table.rows( { selected: true } ).data());
-//                 }
-//             }
-//         ]
-//     } );
-// } );
-
-$(document).ready(function() {
   if ($(".shopPage")[0]) {
     var stripe = Stripe('pk_test_jdpZ0e0VuV3QPYHePcK21chZ0033T1alyY');
 

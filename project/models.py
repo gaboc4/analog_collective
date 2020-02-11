@@ -3,19 +3,23 @@ from datetime import datetime
 from flask_login import UserMixin
 from . import db
 
+
 class Users(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     first_name = db.Column(db.String(1000))
     last_name = db.Column(db.String(1000))
     email = db.Column(db.String(1000), unique=True)
     password = db.Column(db.String(1000))
-    user_type = db.Column(db.Integer,  db.ForeignKey('user_type.id'))
+    user_type = db.Column(db.Integer, db.ForeignKey('user_type.id'))
     spot_auth = db.Column(db.Boolean)
-    tokens = db.Column(db.Integer)
+    credits = db.Column(db.Integer)
+    payment_info = db.Column(db.Integer)
+
 
 class UserType(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1000))
+
 
 class PlaylistDetails(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -29,7 +33,7 @@ class PlaylistDetails(UserMixin, db.Model):
     last_updated = db.Column(db.DateTime)
 
     def __init__(self, user_id, name, playlist_uri, num_followers, num_tracks, placement_rate,
-                    genre):
+                 genre):
         self.user_id = user_id
         self.name = name
         self.playlist_uri = playlist_uri
@@ -38,6 +42,7 @@ class PlaylistDetails(UserMixin, db.Model):
         self.placement_rate = placement_rate
         self.genre = genre
         self.last_updated = datetime.now()
+
 
 class SpotifyToken(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,6 +55,7 @@ class SpotifyToken(UserMixin, db.Model):
         self.access_token = access_token
         self.refresh_token = refresh_token
 
+
 class ArtistsInPlaylist(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     playlist_id = db.Column(db.Integer)
@@ -58,6 +64,7 @@ class ArtistsInPlaylist(UserMixin, db.Model):
     def __init__(self, playlist_id, artist_name):
         self.playlist_id = playlist_id
         self.artist_name = artist_name
+
 
 class SimilarArtists(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -68,14 +75,15 @@ class SimilarArtists(UserMixin, db.Model):
     similar_artist_4 = db.Column(db.String(1000))
     similar_artist_5 = db.Column(db.String(1000))
 
-    def __init__(self, artist_id, similar_artist_1, similar_artist_2, similar_artist_3, 
-                        similar_artist_4, similar_artist_5):
+    def __init__(self, artist_id, similar_artist_1, similar_artist_2, similar_artist_3,
+                 similar_artist_4, similar_artist_5):
         self.artist_id = artist_id
         self.similar_artist_1 = similar_artist_1
         self.similar_artist_2 = similar_artist_2
         self.similar_artist_3 = similar_artist_3
         self.similar_artist_4 = similar_artist_4
         self.similar_artist_5 = similar_artist_5
+
 
 class ArtistTracks(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

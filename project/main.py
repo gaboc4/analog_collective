@@ -14,7 +14,7 @@ from .helpers import refresh_access_token, get_access_and_refresh, \
 
 main = Blueprint('main', __name__)
 
-tokens_info = "These tokens represent how much money you have put into the " \
+credits_info = "These tokens represent how much money you have put into the " \
               "platform in order to add your songs to a playlist. " \
               "You can add more to your account from the Store page!"
 
@@ -134,8 +134,8 @@ def artist_profile():
     return render_template('artist_profile.html',
                            user_name=user.first_name,
                            tracks=get_curr_artist_tracks(user.id),
-                           user_tokens=user.tokens if user.tokens is not None else 0,
-                           tokens_info=tokens_info,
+                           user_credits=user.credits if user.credits is not None else 0,
+                           credits_info=credits_info,
                            related_artists=get_curr_sim_artists(user.id, sp))
 
 
@@ -152,11 +152,11 @@ def artist_song():
     sp = spotipy.Spotify(auth=access_token)
 
     if request.form.get('payment_success'):
-        return render_template('artist_profile.html', pmnt=True,
+        return render_template('artist_profile.html',
                                user_name=user.first_name,
                                tracks=get_curr_artist_tracks(user.id),
-                               user_tokens=user.tokens if user.tokens is not None else 0,
-                               tokens_info=tokens_info,
+                               user_credits=user.credits if user.credits is not None else 0,
+                               credits_info=credits_info,
                                related_artists=get_curr_sim_artists(user.id, sp))
 
     song_uri = request.form.get('song_uri')
@@ -173,14 +173,14 @@ def artist_song():
     except spotipy.client.SpotifyException as e:
         return render_template('artist_profile.html',
                                user_name=user.first_name,
-                               user_tokens=user.tokens if user.tokens is not None else 0,
-                               tokens_info=tokens_info,
+                               user_credits=user.credits if user.credits is not None else 0,
+                               credits_info=credits_info,
                                tracks=get_curr_artist_tracks(user.id),
                                related_artists=get_curr_sim_artists(user.id, sp),
                                exception="There was an issue retrieving your \
-									requested track from Spotify, please \
-									check your URI, make sure it is a track \
-									link not an album one and try again")
+                                            requested track from Spotify, please \
+                                            check your URI, make sure it is a track \
+                                            link not an album one and try again")
 
     song_artist_name = song_details['artists'][0]['name']
     song_artist_uri = song_details['artists'][0]['uri']
@@ -191,13 +191,13 @@ def artist_song():
     except spotipy.client.SpotifyException as e:
         return render_template('artist_profile.html',
                                user_name=user.first_name,
-                               user_tokens=user.tokens if user.tokens is not None else 0,
-                               tokens_info=tokens_info,
+                               user_credits=user.credits if user.credits is not None else 0,
+                               credits_info=credits_info,
                                tracks=get_curr_artist_tracks(user.id),
                                related_artists=get_curr_sim_artists(user.id, sp),
                                exception="There was an issue retrieving your \
-									similar artrists from Spotify, please make \
-									sure your URIs are correct and try again.")
+                                            similar artrists from Spotify, please make \
+                                            sure your URIs are correct and try again.")
 
     genres = [artist['genres'] for artist in all_artists]
     genres = [genre for sublist in genres for genre in sublist]
@@ -238,6 +238,6 @@ def artist_song():
                            tracks=get_curr_artist_tracks(user.id),
                            related_artists=get_curr_sim_artists(user.id, sp),
                            user_name=user.first_name,
-                           tokens_info=tokens_info,
+                           credits_info=credits_info,
                            playlist_dict=similar_playlists,
-                           user_tokens=user.tokens if user.tokens is not None else 0)
+                           user_credits=user.credits if user.credits is not None else 0)
