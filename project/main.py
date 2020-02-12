@@ -3,12 +3,9 @@ from flask_login import login_required, current_user
 from .models import Users, PlaylistDetails, SpotifyToken, ArtistsInPlaylist, \
     ArtistTracks, SimilarArtists
 from . import db
-import sys
+import json
 import re
 import spotipy
-import spotipy.util as util
-from spotipy import oauth2
-import os
 from .helpers import refresh_access_token, get_access_and_refresh, \
     get_playlist_genre, get_curr_artist_tracks, get_curr_sim_artists
 
@@ -241,3 +238,20 @@ def artist_song():
                            credits_info=credits_info,
                            playlist_dict=similar_playlists,
                            user_credits=user.credits if user.credits is not None else 0)
+
+
+@main.route('/song_to_plist', methods=['POST'])
+@login_required
+def add_song_to_playlist():
+    try:
+        user = Users.query.filter_by(email=current_user.email).first()
+        plist_id = request.args.get('plist_id')
+        new_song = ArtistTracks.query.filter_by(artist_id=user.id).order_by(ArtistTracks.id.desc()).first()
+        new_song.placed_playlist_id = int(plist_id)
+
+        user.credits = user.credits - 1
+
+        db.session.commit()
+        return json.dumps({'success': True}), 200
+    except Exception as e:
+        return json.dumps({'fail': e}), 500

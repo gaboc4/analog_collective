@@ -3,35 +3,46 @@ $(function () {
   })
 
 $(document).ready(function() {
-console.log('here');
 
-    var table = $('#similarPlaylists').DataTable( {
-        dom: 'Bfrtip',
-        select: {
-          style: 'single'
-        },
-        paging: false,
-        searching: false,
-        buttons: [
-            {
-                text: 'Add song to playlist',
-                action: function () {
-                    console.log(table.rows( { selected: true } ).data()[0][0]);
+  var table = $('#similarPlaylists').DataTable( {
+      dom: 'Bfrtip',
+      select: {
+        style: 'single'
+      },
+      paging: false,
+      searching: false,
+      buttons: [
+          {
+              text: 'Add song to playlist',
+              action: function () {
+                  console.log(table.rows( { selected: true } ).data()[0][0]);
 
+                  if (confirm("Are you sure you want to add your song to this playlist?")) {
+                    route = '/song_to_plist?plist_id=' + table.rows( { selected: true } ).data()[0][0]
+                    fetch(route, {
+						          method: 'POST'
+						        }).then(function(result) {
+						          return result.json()
+						        }).then(redirectAfterPlistAdd);
+                  } else {
+                    alert("Addition cancelled");
+                  }
 
-//                      var txt;
-                      if (confirm("Press a button!")) {
-                        txt = "You pressed OK!";
-                      } else {
-                        txt = "You pressed Cancel!";
-                      }
-//                      document.getElementById("demo").innerHTML = txt;
+              }
+          }
+      ]
+  } );
 
-                }
-            }
-        ]
-    } );
-    table.column( 0 ).visible( false );
+  function redirectAfterPlistAdd(responseJson) {
+    if (responseJson.error) {
+			alert("Error adding song to playlist, please try again");
+    }
+    else {
+      window.location.href = "/artist_profile"
+    }
+  }
+
+  table.column( 0 ).visible( false );
 
   if ($(".shopPage")[0]) {
     var stripe = Stripe('pk_test_jdpZ0e0VuV3QPYHePcK21chZ0033T1alyY');
@@ -82,7 +93,7 @@ console.log('here');
     function handleServerResponse(responseJson) {
       if (responseJson.error) {
         // An error happened when charging the card, show it in the payment form
-        window.location.href = "/artist_profile";
+        alert("Error processing payment, please try again");
       } else {
         // Show a success message
         window.location.href = "/artist_profile";
