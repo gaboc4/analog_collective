@@ -15,6 +15,16 @@ class Users(UserMixin, db.Model):
     credits = db.Column(db.Integer)
     payment_info = db.Column(db.Integer)
 
+    def __init__(self, first_name, last_name, email, password, user_type):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.password = password
+        self.user_type = user_type
+        self.spot_auth = False
+        self.credits = 0
+        self.payment_info = 0
+
 
 class UserType(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -5,7 +5,6 @@
   <h1 class="title">
     Welcome back, {{name}}!
   </h1>
-  <!-- is-bordered is-striped is-narrow is-hoverable is-fullwidth -->
   {% if playlist_dict|length != 0 %}
   <table class="table body-margin">
     <thead>
@@ -54,6 +53,9 @@
   </div>
   {% if too_short %}
     <h3> The playlist you submitted does not have enough followers.</h3>
+  {% endif %}
+  {% if already_added %}
+    <h3> The playlist you submitted has already been added to the platform</h3>
   {% endif %}
 </div>
 {% endblock %}

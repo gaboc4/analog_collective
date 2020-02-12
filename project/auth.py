@@ -9,9 +9,11 @@ from .helpers import get_auth_url
 
 auth = Blueprint('auth', __name__)
 
+
 @auth.route('/login')
 def login():
     return render_template('login.html')
+
 
 @auth.route('/login', methods=['POST'])
 def login_post():
@@ -38,6 +40,7 @@ def login_post():
 def signup():
     return render_template('signup.html')
 
+
 @auth.route('/signup', methods=['POST'])
 def signup_post():
 
@@ -47,17 +50,16 @@ def signup_post():
     password = request.form.get('password')
     user_type = request.form.get('user_type')
 
-    user = Users.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
+    user = Users.query.filter_by(email=email).first()
 
-    if user: # if a user is found, we want to redirect back to signup page so user can try again  
+    if user:
         flash('Email address already exists')
         return redirect(url_for('auth.signup'))
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
     new_user = Users(email=email, first_name=first_name, last_name=last_name, user_type=user_type,
-    password=generate_password_hash(password, method='sha256'), spot_auth=False)
+                     password=generate_password_hash(password, method='sha256'))
 
-    # add the new user to the database
     db.session.add(new_user)
     db.session.commit()
 

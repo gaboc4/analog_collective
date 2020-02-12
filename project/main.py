@@ -7,7 +7,7 @@ import json
 import re
 import spotipy
 from .helpers import refresh_access_token, get_access_and_refresh, \
-    get_playlist_genre, get_curr_artist_tracks, get_curr_sim_artists
+    get_playlist_genre, get_curr_artist_tracks, get_curr_sim_artists, refresh_playlist_deets
 
 main = Blueprint('main', __name__)
 
@@ -55,7 +55,14 @@ def profile():
 @login_required
 def playlister_profile():
     user = Users.query.filter_by(email=current_user.email).first()
+    sp = refresh_access_token(SpotifyToken.query.filter_by(user_id=user.id).first().refresh_token, user.id)
+
     playlist_dict = PlaylistDetails.query.filter_by(user_id=user.id).all()
+
+    if len(playlist_dict) != 0:
+        for p in playlist_dict:
+            refresh_playlist_deets(p.playlist_uri, sp)
+
     return render_template('playlister_profile.html',
                            name=current_user.first_name,
                            playlist_dict=playlist_dict)
@@ -66,32 +73,24 @@ def playlister_profile():
 def check_playlist():
     user = Users.query.filter_by(email=current_user.email).first()
     uri = request.form.get('playlist_uri')
-    if uri is "": return render_template('playlister_profile.html',
-                                         name=current_user.first_name,
-                                         playlist_dict=
-                                         PlaylistDetails.query.filter_by(
-                                             user_id=user.id).all())
+    if uri is "":
+        return render_template('playlister_profile.html',
+                                name=current_user.first_name,
+                                playlist_dict=PlaylistDetails.query.filter_by(user_id=user.id).all())
 
-    access_token = refresh_access_token(SpotifyToken.query.filter_by(user_id=
-                                                                     user.id).first().refresh_token)
-    user_spot_info = SpotifyToken.query.filter_by(user_id=user.id).first()
-    user_spot_info.access_token = access_token
-    db.session.commit()
-
-    sp = spotipy.Spotify(auth=access_token)
+    sp = refresh_access_token(SpotifyToken.query.filter_by(user_id=user.id).first().refresh_token, user.id)
 
     playlist = sp.playlist(playlist_id=uri, fields='name,followers,tracks')
 
-    playlist_links = [playlist.playlist_uri for playlist in
-                      PlaylistDetails.query.filter_by(user_id=user.id).all()]
+    # playlist_links = [playlist.playlist_uri for playlist in
+    #                   PlaylistDetails.query.filter_by(user_id=user.id).all()]
     if (playlist['followers']['total']) < 750:
         return render_template('playlister_profile.html',
                                name=current_user.first_name,
                                too_short=True,
-                               playlist_dict=PlaylistDetails.query.filter_by(
-                                   user_id=user.id).all())
+                               playlist_dict=PlaylistDetails.query.filter_by(user_id=user.id).all())
 
-    if PlaylistDetails.query.filter_by(playlist_uri=uri).first() is None:
+    elif PlaylistDetails.query.filter_by(playlist_uri=uri).first() is None:
         overall_genre = get_playlist_genre([track['track']['artists'][0]['uri']
                                             for track in playlist['tracks']['items']], sp)
         playlist_details = PlaylistDetails(user.id, playlist['name'],
@@ -110,6 +109,11 @@ def check_playlist():
                                                                      artist_name))
             db.session.add(artist_in_paylist)
             db.session.commit()
+    else:
+        return render_template('playlister_profile.html',
+                               name=current_user.first_name,
+                               already_added=True,
+                               playlist_dict=PlaylistDetails.query.filter_by(user_id=user.id).all())
     return render_template('playlister_profile.html',
                            name=current_user.first_name,
                            too_short=False,
@@ -121,13 +125,7 @@ def check_playlist():
 @login_required
 def artist_profile():
     user = Users.query.filter_by(email=current_user.email).first()
-    access_token = refresh_access_token(SpotifyToken.query.filter_by(
-        user_id=user.id).first().refresh_token)
-    user_spot_info = SpotifyToken.query.filter_by(user_id=user.id).first()
-    user_spot_info.access_token = access_token
-    db.session.commit()
-
-    sp = spotipy.Spotify(auth=access_token)
+    sp = refresh_access_token(SpotifyToken.query.filter_by(user_id=user.id).first().refresh_token, user.id)
     return render_template('artist_profile.html',
                            user_name=user.first_name,
                            tracks=get_curr_artist_tracks(user.id),
@@ -140,13 +138,7 @@ def artist_profile():
 @login_required
 def artist_song():
     user = Users.query.filter_by(email=current_user.email).first()
-    access_token = refresh_access_token(SpotifyToken.query.filter_by
-                                        (user_id=user.id).first().refresh_token)
-    user_spot_info = SpotifyToken.query.filter_by(user_id=user.id).first()
-    user_spot_info.access_token = access_token
-    db.session.commit()
-
-    sp = spotipy.Spotify(auth=access_token)
+    sp = refresh_access_token(SpotifyToken.query.filter_by(user_id=user.id).first().refresh_token, user.id)
 
     if request.form.get('payment_success'):
         return render_template('artist_profile.html',
@@ -250,6 +242,9 @@ def add_song_to_playlist():
         new_song.placed_playlist_id = int(plist_id)
 
         user.credits = user.credits - 1
+
+        playlist = PlaylistDetails.query.filter_by(id=plist_id).first()
+        playlist.placement_rate += 1
 
         db.session.commit()
         return json.dumps({'success': True}), 200
