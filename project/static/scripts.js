@@ -78,12 +78,16 @@ $(document).ready(function() {
         // An error happened when collecting card details, show it in the payment form
         resultContainer.textContent = result.error.message;
       } else {
-        // Otherwise send paymentMethod.id to your server (see Step 3)
+        creditAmount = document.getElementById('credit-amount').value;
+        if (creditAmount == 10) {price = 6000}
+        else if (creditAmount == 50) {price = 25000}
+        else if (creditAmount == 100) {price = 45000}
+        else {return alert("Please make sure you enter one of the valid credit options from the table");}
         fetch('/shop/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ payment_method_id: result.paymentMethod.id ,
-                                  price: document.getElementById('token-amount').value * 10})
+                                  price: price, new_credits: creditAmount})
         }).then(function(result) {
           return result.json();
         }).then(handleServerResponse);
@@ -96,6 +100,7 @@ $(document).ready(function() {
         alert("Error processing payment, please try again");
       } else {
         // Show a success message
+        $('#purchaseCard').append( "<p>Thank you! You will be redirected to your profile in a moment</p>" );
         window.location.href = "/artist_profile";
       }
     }

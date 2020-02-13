@@ -3,63 +3,67 @@
 
 <div class="body-margin shopPage">
   <div class="row">
-    <div class="col-sm-6">
-      <h1>Token Purchase Options</h1>
-    </div>
-    <div class="col-sm-6">
-      <h2 class="title">Current Credits: {{tokens}}</h2>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Token Purchase Options</h5>
+            <div class="table-ovflow">
+              <table class="table table-in-card">
+                <thead>
+                  <tr>
+                    <th scope="col">Number of credits</th>
+                    <th scope="col">Songs</th>
+                    <th scope="col">Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td scope="row">10</td>
+                    <td>10</td>
+                    <td>$59.99</td>
+                  </tr>
+                  <tr>
+                    <td scope="row">50</td>
+                    <td>50</td>
+                    <td>$249.99</td>
+                  </tr>
+                  <tr>
+                    <td scope="row">100</td>
+                    <td>100</td>
+                    <td>$449.99</td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+      </div>
     </div>
   </div>
-
-<div class="row">
-  <div class="table-ovflow">
-    <table class="table table-in-card">
-      <thead>
-        <tr>
-          <th scope="col">Number of credits</th>
-          <th scope="col">Songs</th>
-          <th scope="col">Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td scope="row">50</td>
-          <td>1</td>
-          <td>$3</td>
-        </tr>
-        <tr>
-          <td scope="row">5</td>
-          <td>10</td>
-          <td>$15</td>
-        </tr>
-        <tr>
-          <td scope="row">10</td>
-          <td>20</td>
-          <td>$20</td>
-        </tr>
-        <tr>
-          <td scope="row">50</td>
-          <td>120</td>
-          <td>$50</td>
-        </tr>
-        <tr>
-          <td scope="row">100</td>
-          <td>150</td>
-          <td>$75</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="col-sm-6">
+    <div class="card" id="purchaseCard">
+      <div class="card-body">
+        <h5 class="card-title">Current Credits: {{tokens}}</h5>
+            <form id="payment-form">
+              <div class="form-group">
+                <input id="cardholder-name" class="form-control" type="text" value="{{user_name}}">
+              </div>
+              <div class="form-group">
+                <label>How many credits would you like to purchase?</label>
+                <select class="form-control" id="credit-amount">
+                  <option>10</option>
+                  <option>50</option>
+                  <option>100</option>
+                </select>
+              </div>
+              <div id="card-element" class="form-group"><!-- placeholder for Elements --></div>
+              <button id="card-button" class="btn btn-primary">Submit Payment</button>
+              <p id="payment-result">{{error}}</p>
+            </form>
+      </div>
+    </div>
   </div>
 </div>
 
-  <form id="payment-form">
-    <input id="cardholder-name" type="text" value="{{user_name}}">
-    <input id="token-amount" type="number"
-          placeholder="How many tokens would you like to purchase?" required>
-    <div id="card-element"><!-- placeholder for Elements --></div>
-    <button id="card-button">Submit Payment</button>
-    <p id="payment-result">{{error}}</p>
-  </form>
+
 
 </div>
 {% endblock %}

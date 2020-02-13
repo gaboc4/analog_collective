@@ -1,12 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
-from .models import Users, PlaylistDetails, SpotifyToken, ArtistsInPlaylist, \
-    ArtistTracks, SimilarArtists
+from .models import Users
 from . import db
-from .helpers import refresh_access_token, \
-    get_curr_sim_artists, get_curr_artist_tracks
-import spotipy
-import sys
 import os
 import stripe
 import json
@@ -20,10 +15,10 @@ stripe.api_key = os.environ['STRIPE_KEY']
 @login_required
 def submit_payment():
     user = Users.query.filter_by(email=current_user.email).first()
-    credits = user.credits if user.credits is not None else 0
+    curr_credits = user.credits if user.credits is not None else 0
     if request.method == 'GET':
         return render_template('shop.html',
-                               tokens=credits, error='',
+                               tokens=curr_credits, error='',
                                user_name=user.first_name + " " + user.last_name)
     elif request.method == "POST":
         data = request.get_json()
@@ -36,15 +31,15 @@ def submit_payment():
                 confirm=True,
                 error_on_requires_action=True,
             )
-            return generate_response(intent, data['price'])
+            return generate_response(intent, data['new_credits'])
         except stripe.error.CardError as e:
             return json.dumps({'error': e.user_message}), 200
 
 
-def generate_response(intent, price):
+def generate_response(intent,new_credits):
     if intent.status == 'succeeded':
         user = Users.query.filter_by(email=current_user.email).first()
-        user.credits = price / 10
+        user.credits += int(new_credits)
         db.session.commit()
         return json.dumps({'sucess': True}), 200
     else:
