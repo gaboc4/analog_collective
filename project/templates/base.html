@@ -4,63 +4,66 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Analog Collective</title>
-    <link rel="icon" href="../static/favicon.ico"/>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Analog Collective</title>
+	<link rel="icon" href="../static/favicon.ico"/>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+				integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+					integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+					crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+					integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+					crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+					integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+					crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-colvis-1.6.1/sl-1.3.1/datatables.min.css"/>
+	<link rel="stylesheet" type="text/css"
+				href="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-colvis-1.6.1/sl-1.3.1/datatables.min.css"/>
 
-    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-colvis-1.6.1/sl-1.3.1/datatables.min.js"></script>
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+	<script type="text/javascript"
+					src="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-colvis-1.6.1/sl-1.3.1/datatables.min.js"></script>
+	<script src="https://js.stripe.com/v3/"></script>
+	<script src="{{ url_for('static', filename='scripts.js') }}"></script>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
 <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}" >
-                <img src="{{ url_for('static', filename='logo_small.png') }}">
-            </a>
-            <div>
-              <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a href="{{ url_for('main.index') }}" class="nav-link">Home</a>
-                </li>
-                <li class="nav-item active">
-                    {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('main.profile') }}" class="nav-link">Profile</a>
-                    {% endif %}
-                </li>
-                {% if not current_user.is_authenticated %}
-                <li class="nav-item active">
-                    <a href="{{ url_for('auth.login') }}" class="nav-link">Login</a>
-                </li>
-                <li class="nav-item active">
-                    <a href="{{ url_for('auth.signup') }}" class="nav-link">Sign Up</a>
-                </li>
-                {% endif %}
-                {% if current_user.is_authenticated %}
-                <li class="nav-item active">
-                <a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a>
-                </li>
-                {% endif %}
-              </ul>
-            </div>
-          </nav>
 
-        <div class="container">
-            {% block content %}
-            {% endblock %}
-        </div>
+
+    <nav class="site-header sticky-top py-1">
+      <div class="container d-flex flex-column flex-md-row justify-content-between">
+        <a href="{{ url_for('main.index') }}">
+          <img src="{{ url_for('static', filename='logo_small.png') }}">
+        </a>
+        <a href="{{ url_for('main.index') }}" class="py-2 d-none d-md-inline-block">Home</a>
+
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.profile') }}" class="py-2 d-none d-md-inline-block">Profile</a>
+        {% endif %}
+
+        {% if not current_user.is_authenticated %}
+
+        <a href="{{ url_for('auth.login') }}" class="py-2 d-none d-md-inline-block">Login</a>
+
+        <a href="{{ url_for('auth.signup') }}" class="py-2 d-none d-md-inline-block">Sign Up</a>
+
+        {% endif %}
+        {% if current_user.is_authenticated %}
+
+          <a href="{{ url_for('auth.logout') }}" class="py-2 d-none d-md-inline-block">Logout</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
 </body>
 </html>

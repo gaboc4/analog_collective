@@ -3,58 +3,38 @@
 {% block content %}
 
 <div class="body-margin ">
-  <div class="row">
-    <div class="col-sm-6">
-      <h1 class="title">
-        Welcome back, {{user_name}}!
-      </h1>
-    </div>
-    <div class="col-sm-2 offset-md-2" style="display: inherit">
+
+  <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light"
+       style="height: 300px">
+    <div class="col-md-5 p-lg-5 mx-auto my-5">
+       <h1>Welcome back, {{user_name}}!</h1>
       <h2 class="title" data-toggle="tooltip" data-placement="left"
             title="{{credits_info}}">Tokens: {{user_credits}}</h2>
-    </div>
-    <div class="col-sm-2" style="display: inherit">
       <form method="GET" action="/shop/">
         <button class="btn btn-primary" >Purchase More</button>
       </form>
     </div>
   </div>
 
-<!--  {% if pmnt %}-->
-<!--  <div id="myModal" class="modal fade">-->
-<!--    <div class="modal-dialog">-->
-<!--        <div class="modal-content">-->
-<!--            <div class="modal-header">-->
-<!--                <button type="button" class="close" data-dismiss="modal"-->
-<!--                        aria-hidden="true">&times;</button>-->
-<!--                <h4 class="modal-title">{{pmt}}</h4>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  {% endif %}-->
-
 
   {% if exception %}
   <p>{{exception}}</p>
   {% endif %}
 
-  <div class="row">
-    <div class="col-sm-4">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">New Song Input</h5>
-          {% include 'song_form.html' %}
-        </div>
+
+  <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
+    <div class="bg-dark mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+      <div class="my-3 py-3">
+        <h2 class="display-5">New Song Input</h2>
+        {% include 'song_form.html' %}
       </div>
     </div>
-    {% if playlist_embed_urls %}
-    <div class="col-sm-8">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Related Playlists</h5>
+    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+      <div class="my-3 p-3">
+        <h2 class="display-5">Related Playlists</h2>
+          {% if playlist_embed_urls %}
             {% for url in playlist_embed_urls %}
-              <iframe src={{url}} width="300" height="250" frameborder="0"
+              <iframe src={{url}} width="200" height="250" frameborder="0"
               allowtransparency="true" allow="encrypted-media"></iframe>
             {% endfor %}
             <div class="table-ovflow">
@@ -81,81 +61,71 @@
                 </tbody>
               </table>
             </div>
-        </div>
+      {% endif %}
       </div>
     </div>
-    {% endif %}
   </div>
 
-  <div class="row">
-    <div class="col-sm-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Current Songs and Related Artists</h5>
-          {% if tracks and related_artists %}
-            <div class="table-ovflow">
-              <table class="table table-in-card">
-                <thead>
-                  <tr>
-                    <th scope="col">Track Name</th>
-                    <th scope="col">Track Link</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Placed Playlist</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for track in tracks %}
-                  <tr>
-                    {% for key in track %}
-                      {% if key.startswith('track_link') %}
-                        <td><a href="{{track[key]}}" target="_blank">Link to Track</a></td>
-                      {% else %}
-                        <td style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
-                      {% endif %}
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-                </tbody>
-              </table>
-            </div>
 
-            <table class="table curr-artist-card">
+
+  <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
+    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+      <div class="my-3 p-3">
+        <h2 class="display-5">Current Songs and Related Artists</h2>
+        {% if tracks and related_artists %}
+          <div class="table-ovflow">
+            <table class="table table-in-card">
               <thead>
                 <tr>
-                  <th scope="col">Related Artist 1</th>
-                  <th scope="col">Related Artist 2</th>
-                  <th scope="col">Related Artist 3</th>
-                  <th scope="col">Related Artist 4</th>
-                  <th scope="col">Related Artist 5</th>
+                  <th scope="col">Track Name</th>
+                  <th scope="col">Track Link</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Placed Playlist</th>
                 </tr>
               </thead>
               <tbody>
+                {% for track in tracks %}
                 <tr>
-                  {% for key in related_artists %}
-                  <td>{{related_artists[key]}}</td>
+                  {% for key in track %}
+                    {% if key.startswith('track_link') %}
+                      <td><a href="{{track[key]}}" target="_blank">Link to Track</a></td>
+                    {% else %}
+                      <td style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
+                    {% endif %}
                   {% endfor %}
-                </tr>
+              </tr>
+              {% endfor %}
               </tbody>
             </table>
-            {% else %}
-            <p>You have no tracks or related artists in the system, add some above!</p>
-            {% endif %}
+          </div>
+        <table class="table curr-artist-card">
+          <thead>
+            <tr>
+              <th scope="col">Related Artist 1</th>
+              <th scope="col">Related Artist 2</th>
+              <th scope="col">Related Artist 3</th>
+              <th scope="col">Related Artist 4</th>
+              <th scope="col">Related Artist 5</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {% for key in related_artists %}
+              <td>{{related_artists[key]}}</td>
+              {% endfor %}
+            </tr>
+          </tbody>
+        </table>
+        {% else %}
+          <p>You have no tracks or related artists in the system, add some above!</p>
+        {% endif %}
         </div>
       </div>
+    <div class="bg-primary mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+      <div class="my-3 py-3">
+        <h2 class="display-5">Song Details</h2>
+      </div>
     </div>
-    {% if song_img %}
-    <div class="col-sm-6">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Song Details</h5>
-            <img src="{{song_img}}">
-            {% if song_description %}
-            <p>{{song_description}}</p>
-            {% endif %}
-          </div>
-        </div>
-    </div>
-    {% endif %}
   </div>
 </div>
 {% endblock %}

@@ -13,7 +13,8 @@ class Users(UserMixin, db.Model):
     user_type = db.Column(db.Integer, db.ForeignKey('user_type.id'))
     spot_auth = db.Column(db.Boolean)
     credits = db.Column(db.Integer)
-    payment_info = db.Column(db.Integer)
+    payment_info = db.Column(db.String(1000))
+    stripe_approval_needed = db.Column(db.Boolean)
 
     def __init__(self, first_name, last_name, email, password, user_type):
         self.first_name = first_name
@@ -23,7 +24,6 @@ class Users(UserMixin, db.Model):
         self.user_type = user_type
         self.spot_auth = False
         self.credits = 0
-        self.payment_info = 0
 
 
 class UserType(UserMixin, db.Model):

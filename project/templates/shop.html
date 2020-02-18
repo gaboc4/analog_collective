@@ -2,68 +2,65 @@
 {% block content %}
 
 <div class="body-margin shopPage">
-  <div class="row">
-  <div class="col-sm-6">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Token Purchase Options</h5>
-            <div class="table-ovflow">
-              <table class="table table-in-card">
-                <thead>
-                  <tr>
-                    <th scope="col">Number of credits</th>
-                    <th scope="col">Songs</th>
-                    <th scope="col">Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td scope="row">10</td>
-                    <td>10</td>
-                    <td>$59.99</td>
-                  </tr>
-                  <tr>
-                    <td scope="row">50</td>
-                    <td>50</td>
-                    <td>$249.99</td>
-                  </tr>
-                  <tr>
-                    <td scope="row">100</td>
-                    <td>100</td>
-                    <td>$449.99</td>
-                  </tr>
-                </tbody>
-              </table>
+  <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
+    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+      <div class="my-3 py-3">
+        <h2 class="display-5">Token Purchase Options</h2>
+          <div class="table-ovflow">
+            <table class="table table-in-card">
+              <thead>
+                <tr>
+                  <th scope="col">Number of credits</th>
+                  <th scope="col">Songs</th>
+                  <th scope="col">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td scope="row">10</td>
+                  <td>10</td>
+                  <td>$59.99</td>
+                </tr>
+                <tr>
+                  <td scope="row">50</td>
+                  <td>50</td>
+                  <td>$249.99</td>
+                </tr>
+                <tr>
+                  <td scope="row">100</td>
+                  <td>100</td>
+                  <td>$449.99</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
       </div>
     </div>
-  </div>
-  <div class="col-sm-6">
-    <div class="card" id="purchaseCard">
-      <div class="card-body">
-        <h5 class="card-title">Current Credits: {{tokens}}</h5>
-            <form id="payment-form">
-              <div class="form-group">
-                <input id="cardholder-name" class="form-control" type="text" value="{{user_name}}">
-              </div>
-              <div class="form-group">
-                <label>How many credits would you like to purchase?</label>
-                <select class="form-control" id="credit-amount">
-                  <option>10</option>
-                  <option>50</option>
-                  <option>100</option>
-                </select>
-              </div>
-              <div id="card-element" class="form-group"><!-- placeholder for Elements --></div>
-              <button id="card-button" class="btn btn-primary">Submit Payment</button>
-              <p id="payment-result">{{error}}</p>
-            </form>
+    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+      <div class="my-3 p-3">
+        <h2 class="display-5">Current Credits: {{tokens}}</h2>
+      </div>
+        <form id="payment-form">
+          <div class="form-group">
+            <label>Name</label>
+            <input id="cardholder-name" class="form-control" type="text" value="{{user_name}}">
+          </div>
+          <div class="form-group">
+            <label>How many credits would you like to purchase?</label>
+            <select class="form-control" id="credit-amount">
+              <option value="10">10</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <label>Card Details</label>
+          <div id="card-element" class="form-group"><!-- placeholder for Elements --></div>
+          <button id="card-button" class="btn btn-primary">Submit Payment</button>
+          <p id="payment-result">{{error}}</p>
+        </form>
       </div>
     </div>
   </div>
-</div>
-
-
 
 </div>
 {% endblock %}

@@ -2,43 +2,128 @@
 {% block content %}
 
 <div class="body-margin">
-  <h1 class="title">
-    Welcome back, {{name}}!
-  </h1>
-  {% if playlist_dict|length != 0 %}
-  <table class="table body-margin">
-    <thead>
-      <tr>
-        <th scope="col">Playlist Name</th>
-        <th scope="col">Playlist URI</th>
-        <th scope="col">Number of Followers</th>
-        <th scope="col">Number of Tracks</th>
-        <th scope="col">Placement Rate</th>
-        <th scope="col">Genre</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for playlist in playlist_dict %}
-      <tr>
-        <td scope="row">{{playlist.name}}</td>
-        <td>{{playlist.playlist_uri}}</td>
-        <td>{{playlist.num_followers}}</td>
-        <td>{{playlist.num_tracks}}</td>
-        <td>{{playlist.placement_rate}}</td>
-        <td>{{playlist.genre}}</td>
-      </tr>
+  <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light" style="height: 300px">
+    <div class="col-md-5 p-lg-5 mx-auto my-5">
+       <h1>Welcome back, {{name}}!</h1>
+    </div>
+  </div>
+
+    {% if approval_needed %}
+  <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light">
+    <div class="col-md-5 p-lg-5 mx-auto my-5">
+      <div class="my-3 p-3">
+        <h2 class="display-5">Payment Account Information</h2>
+        <p>Looks like this is your first visit to the platform, welcome! There is a bit more information we need from
+            you before you can get paid for songs added to your playlists. </p>
+      </div>
+      {% for message in get_flashed_messages() %}
+      <p style="color: red;">{{ message }}</p>
       {% endfor %}
-    </tbody>
-  </table>
-  
-  {% else %}
-  <p>No playlists yet, add one here!</p>
+       <form method="POST" action="/stripe_approval">
+       <div class="form-group">
+         <label>Address and Phone Number</label>
+         <input class="form-control" type="text" name="line1" placeholder="Address" required>
+         <input class="form-control" type="text" name="line2" placeholder="Address Line 2">
+         <input class="form-control" type="text" name="city" placeholder="City" required>
+         <input class="form-control" type="text" name="state" placeholder="State" required>
+         <input class="form-control" type="text" name="postal_code" placeholder="ZIP Code" required>
+         <input class="form-control" type="text" name="phone" placeholder="Phone Number" required>
+       </div>
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <select class="form-control "name="dob_month"
+                    placeholder="Month" autofocus="" required>
+              <option value="01">January</option>
+              <option value="02">February</option>
+              <option value="03">March</option>
+              <option value="04">April</option>
+              <option value="05">May</option>
+              <option value="06">June</option>
+              <option value="07">July</option>
+              <option value="08">August</option>
+              <option value="09">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+          <select class="form-control "name="dob_day"
+                  placeholder="Day" autofocus="" required>
+            {% for day in days %}
+            <option value="{{day}}">{{day}}</option>
+            {% endfor %}
+          </select>
+          <select class="form-control "name="dob_year"
+                  placeholder="Year" autofocus="" required>
+            {% for year in years %}
+              <option value="{{year}}">{{year}}</option>
+            {%  endfor %}
+          </select>
+        </div>
+
+         <div class="form-group">
+           <label>Bank Information</label>
+           <input class="form-control" type="text" name="account_number" placeholder="Checking Account Number" required>
+           <input class="form-control" type="text" name="routing_number" placeholder="Routing Number" required>
+          </div>
+         <div class="form-group">
+           <label>Last four of Social</label>
+           <input class="form-control" type="password" name="ssn_last_4" placeholder="Last 4 SSN">
+         </div>
+
+         <div class="form-group">
+            <label>Do you accept the <a href="https://stripe.com/connect-account/legal">Terms of Service</a>?</label>
+            <select class="form-control" name="tos_accept" de="No" autofocus="" required>
+              <option value="False">No</option>
+              <option value="True">Yes</option>
+            </select>
+          </div>
+
+        <button class="btn btn-primary" style="margin-top: 10px;">Submit</button>
+      </form>
+    </div>
+  </div>
   {% endif %}
-  <div class="body-margin">
-    <div class="card">
-      <div class="card-body">
-          <h5 class="card-title">Add another playlist here!</h5>
-          <form method="POST" action="/playlister_profile">
+
+  <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
+    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+      <div class="my-3 py-3">
+        <h2 class="display-5">Your Playlists</h2>
+          {% if playlist_dict|length != 0 %}
+          <table class="table body-margin">
+            <thead>
+              <tr>
+                <th scope="col">Playlist Name</th>
+                <th scope="col">Playlist URI</th>
+                <th scope="col">Number of Followers</th>
+                <th scope="col">Number of Tracks</th>
+                <th scope="col">Placement Rate</th>
+                <th scope="col">Genre</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for playlist in playlist_dict %}
+              <tr>
+                <td scope="row">{{playlist.name}}</td>
+                <td>{{playlist.playlist_uri}}</td>
+                <td>{{playlist.num_followers}}</td>
+                <td>{{playlist.num_tracks}}</td>
+                <td>{{playlist.placement_rate}}</td>
+                <td>{{playlist.genre}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {% else %}
+          <p>No playlists yet, add one here!</p>
+          {% endif %}
+      </div>
+    </div>
+    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+      <div class="my-3 p-3">
+        <h2 class="display-5">Add another playlist here!</h2>
+      </div>
+        <form method="POST" action="/playlister_profile">
             <div class="form-group">
                 <input class="form-control" type="text" name="playlist_uri" placeholder="Your Playlist URI">
               <div class="form-group">
@@ -48,14 +133,16 @@
               </div>
             </div>
           </form>
-      </div>
+          {% if too_short %}
+            <h3> The playlist you submitted does not have enough followers.</h3>
+          {% endif %}
+          {% if already_added %}
+            <h3> The playlist you submitted has already been added to the platform</h3>
+          {% endif %}
     </div>
   </div>
-  {% if too_short %}
-    <h3> The playlist you submitted does not have enough followers.</h3>
-  {% endif %}
-  {% if already_added %}
-    <h3> The playlist you submitted has already been added to the platform</h3>
-  {% endif %}
+
+
+
 </div>
 {% endblock %}
