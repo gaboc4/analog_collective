@@ -4,6 +4,16 @@ $(function () {
 
 $(document).ready(function() {
 
+  var existingSongsTable = $('#existingSongs').DataTable( {
+      dom: 'Bfrtip',
+      select: {
+        style: 'single'
+      },
+      paging: false,
+      searching: false,
+      buttons: [{text: "", className: 'existingSongsBtn'}]
+  } );
+
   var table = $('#similarPlaylists').DataTable( {
       dom: 'Bfrtip',
       select: {
@@ -16,9 +26,17 @@ $(document).ready(function() {
               text: 'Add song to playlist',
               action: function () {
                   console.log(table.rows( { selected: true } ).data()[0][0]);
+                  regex = new RegExp(/<([^\s]+).*?id="([^"]*?)".*?>(.+?)<\/\1>/gi);
+									matches = existingSongsTable.rows({ selected: true}).data()[0][1].match(regex);
+									results = [];
+									for (i in matches) {
+									    parts = regex.exec(matches[i]);
+									    results.push(parts[2])
+									}
 
                   if (confirm("Are you sure you want to add your song to this playlist?")) {
-                    route = '/song_to_plist?plist_id=' + table.rows( { selected: true } ).data()[0][0]
+                    route = '/song_to_plist?plist_id=' + table.rows( { selected: true } ).data()[0][0] +
+                            '&song_id=' + results[0]
                     fetch(route, {
 						          method: 'POST'
 						        }).then(function(result) {
@@ -41,6 +59,9 @@ $(document).ready(function() {
       window.location.href = "/artist_profile"
     }
   }
+
+
+
 
   table.column( 0 ).visible( false );
 

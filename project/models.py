@@ -59,11 +59,13 @@ class SpotifyToken(UserMixin, db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     access_token = db.Column(db.String(1000))
     refresh_token = db.Column(db.String(1000))
+    spotify_user_id = db.Column(db.String(1000))
 
-    def __init__(self, user_id, access_token, refresh_token):
+    def __init__(self, user_id, access_token, refresh_token, spotify_user_id):
         self.user_id = user_id
         self.access_token = access_token
         self.refresh_token = refresh_token
+        self.spotify_user_id = spotify_user_id
 
 
 class ArtistsInPlaylist(UserMixin, db.Model):

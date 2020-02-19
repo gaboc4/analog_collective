@@ -68,6 +68,7 @@ def get_curr_artist_tracks(user_id):
 	final_list_of_tracks = []
 	for track in tracks:
 		track_dict = OrderedDict()
+		track_dict['track_uri'] = track.track_uri
 		track_dict['track_name'] = track.track_name
 		track_dict['track_link'] = track.track_link
 		track_dict['track_summary'] = track.track_summary

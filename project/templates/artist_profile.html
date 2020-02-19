@@ -13,56 +13,39 @@
       <form method="GET" action="/shop/">
         <button class="btn btn-primary" >Purchase More</button>
       </form>
+      {% if exception %}
+        <p>{{exception}}</p>
+      {% endif %}
+      {% for message in get_flashed_messages() %}
+        <p>{{ message }}</p>
+      {% endfor %}
     </div>
   </div>
 
 
-  {% if exception %}
-  <p>{{exception}}</p>
-  {% endif %}
+
 
 
   <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
     <div class="bg-dark mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
       <div class="my-3 py-3">
         <h2 class="display-5">New Song Input</h2>
-        {% include 'song_form.html' %}
+        <p>Enter a song you would like to add to the platform and let us know what artists you think you sound like
+            here. If you want to update your similar artists you must update all of them at the same time, even
+            if you are keeping some the same - otherwise they can be left empty</p>
       </div>
+      {% include 'song_form.html' %}
     </div>
     <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
       <div class="my-3 p-3">
         <h2 class="display-5">Related Playlists</h2>
+      </div>
           {% if playlist_embed_urls %}
             {% for url in playlist_embed_urls %}
               <iframe src={{url}} width="200" height="250" frameborder="0"
               allowtransparency="true" allow="encrypted-media"></iframe>
             {% endfor %}
-            <div class="table-ovflow">
-              <table class="table table-in-card display" id="similarPlaylists">
-                <thead>
-                  <tr>
-                    <th scope="col">id</th>
-                    <th scope="col">Playlist Name</th>
-                    <th scope="col">Number of Followers</th>
-                    <th scope="col">Number of Tracks</th>
-                    <th scope="col">Genre</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for playlist in playlist_dict %}
-                  <tr>
-                    <td scope="row">{{playlist.id}}</td>
-                    <td>{{playlist.name}}</td>
-                    <td>{{playlist.num_followers}}</td>
-                    <td>{{playlist.num_tracks}}</td>
-                    <td>{{playlist.genre}}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
       {% endif %}
-      </div>
     </div>
   </div>
 
@@ -74,7 +57,7 @@
         <h2 class="display-5">Current Songs and Related Artists</h2>
         {% if tracks and related_artists %}
           <div class="table-ovflow">
-            <table class="table table-in-card">
+            <table class="table table-in-card display" id="existingSongs">
               <thead>
                 <tr>
                   <th scope="col">Track Name</th>
@@ -88,12 +71,13 @@
                 <tr>
                   {% for key in track %}
                     {% if key.startswith('track_link') %}
-                      <td><a href="{{track[key]}}" target="_blank">Link to Track</a></td>
-                    {% else %}
-                      <td style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
+                      <td scope="row"><a href="{{track[key]}}" id="{{track['track_uri']}}"
+                                         target="_blank">Link to Track</a></td>
+                    {% elif not key.startswith('track_uri')%}
+                      <td scope="row" style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
                     {% endif %}
                   {% endfor %}
-              </tr>
+                </tr>
               {% endfor %}
               </tbody>
             </table>
@@ -121,9 +105,33 @@
         {% endif %}
         </div>
       </div>
-    <div class="bg-primary mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
       <div class="my-3 py-3">
-        <h2 class="display-5">Song Details</h2>
+        <h2 class="display-5">Add a Song to a Playlist</h2>
+      </div>
+      <div class="table-ovflow">
+        <table class="table table-in-card display" id="similarPlaylists">
+          <thead>
+            <tr>
+              <th scope="col">id</th>
+              <th scope="col">Playlist Name</th>
+              <th scope="col">Number of Followers</th>
+              <th scope="col">Number of Tracks</th>
+              <th scope="col">Genre</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for playlist in playlist_dict %}
+            <tr>
+              <td scope="row">{{playlist.id}}</td>
+              <td>{{playlist.name}}</td>
+              <td>{{playlist.num_followers}}</td>
+              <td>{{playlist.num_tracks}}</td>
+              <td>{{playlist.genre}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
