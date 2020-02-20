@@ -27,68 +27,6 @@ def index():
 	return render_template('index.html')
 
 
-@main.route('/stripe_approval', methods=['POST'])
-@login_required
-def authorize_stripe():
-	user = Users.query.filter_by(email=current_user.email).first()
-	if request.form['tos_accept']:
-		try:
-			# stripe.Account.create_person(
-			# 	user.payment_info,
-			# 	first_name=user.first_name,
-			# 	last_name=user.last_name,
-			# 	ssn_last_4=request.form.get('ssn_last_4')
-			# )
-			mod_account = stripe.Account.modify(
-				user.payment_info,
-				tos_acceptance={
-					'date': int(time.time()),
-					'ip': '127.0.0.1',
-				},
-				business_type="individual",
-				individual={
-					"email": user.email,
-					"first_name": user.first_name,
-					"last_name": user.last_name,
-					"phone": request.form.get('phone'),
-					"address": {
-						"city": request.form.get('city'),
-						"state": request.form.get('state'),
-						"line1": request.form.get('line1'),
-						"line2": request.form.get('line2'),
-						"postal_code": request.form.get('postal_code')
-					},
-					"dob": {
-						"day": request.form.get('dob_day'),
-						"month": request.form.get('dob_month'),
-						"year": request.form.get('dob_year')
-					},
-					"ssn_last_4": int(request.form.get('ssn_last_4'))
-				}
-			)
-			stripe.Account.create_external_account(
-				user.payment_info,
-				external_account={
-					"object": "bank_account",
-					"account_holder_name": user.first_name + " " + user.last_name,
-					"account_holder_type": "individual",
-					"country": "US",
-					"currency": "usd",
-					"account_number": request.form.get('account_number'),
-					"routing_number": request.form.get('routing_number')
-				}
-			)
-			print(mod_account)
-			user.stripe_approval_needed = False
-			db.session.commit()
-		except stripe.error.InvalidRequestError as e:
-			print(e.error.message)
-			flash(e.error.message)
-			redirect(url_for('main.playlister_profile'))
-		return redirect(url_for('main.playlister_profile'))
-	return redirect(url_for('main.index'))
-
-
 @main.route('/profile')
 @login_required
 def profile():
@@ -104,19 +42,32 @@ def profile():
 		db.session.commit()
 
 	if user.user_type == 1:
-		if user.payment_info is None:
-			new_account = stripe.Account.create(
-				type="custom",
-				country="US",
-				email=current_user.email,
-				business_profile={"product_description": "Analog Collective playlister account for payouts"},
-				requested_capabilities=["card_payments", "transfers"])
-			user.payment_info = new_account['id']
-			user.stripe_approval_needed = True
-			db.session.commit()
 		return redirect(url_for('main.playlister_profile'))
 	elif user.user_type == 2:
 		return redirect(url_for('main.artist_profile'))
+
+
+@main.route('/stripe_auth')
+@login_required
+def stripe_auth():
+	user = Users.query.filter_by(email=current_user.email).first()
+	code = request.args.get('code')
+	stripe.api_key = os.environ['STRIPE_KEY']
+
+	if code:
+		response = stripe.OAuth.token(
+			grant_type='authorization_code',
+			code=code,
+		)
+
+		# Access the connected account id in the response
+		connected_account_id = response['stripe_user_id']
+		user.payment_info = connected_account_id
+		db.session.commit()
+		flash('Payment account creation successful!')
+		return redirect(url_for('main.playlister_profile'))
+	flash('Payment account creation not successful please try again')
+	return redirect(url_for('main.playlister_profile'))
 
 
 @main.route('/playlister_profile')
@@ -131,11 +82,9 @@ def playlister_profile():
 		for p in playlist_dict:
 			refresh_playlist_deets(p.playlist_uri, sp)
 
-	if user.stripe_approval_needed:
-		years = [x for x in range(1950, 2020)]
-		days = [x for x in range(1, 32)]
+	if user.payment_info is None:
 		return render_template('playlister_profile.html', name=current_user.first_name, playlist_dict=playlist_dict,
-		                       approval_needed=True, years=years, days=days)
+		                       approval_needed=True)
 
 	return render_template('playlister_profile.html', name=current_user.first_name, playlist_dict=playlist_dict)
 

@@ -5,81 +5,18 @@
   <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light" style="height: 300px">
     <div class="col-md-5 p-lg-5 mx-auto my-5">
        <h1>Welcome back, {{name}}!</h1>
+      {% for message in get_flashed_messages() %}
+        <p>{{ message }}</p>
+      {% endfor %}
     </div>
   </div>
 
-    {% if approval_needed %}
+  {% if approval_needed %}
   <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light">
     <div class="col-md-5 p-lg-5 mx-auto my-5">
       <div class="my-3 p-3">
-        <h2 class="display-5">Payment Account Information</h2>
-        <p>Looks like this is your first visit to the platform, welcome! There is a bit more information we need from
-            you before you can get paid for songs added to your playlists. </p>
       </div>
-      {% for message in get_flashed_messages() %}
-      <p style="color: red;">{{ message }}</p>
-      {% endfor %}
-       <form method="POST" action="/stripe_approval">
-       <div class="form-group">
-         <label>Address and Phone Number</label>
-         <input class="form-control" type="text" name="line1" placeholder="Address" required>
-         <input class="form-control" type="text" name="line2" placeholder="Address Line 2">
-         <input class="form-control" type="text" name="city" placeholder="City" required>
-         <input class="form-control" type="text" name="state" placeholder="State" required>
-         <input class="form-control" type="text" name="postal_code" placeholder="ZIP Code" required>
-         <input class="form-control" type="text" name="phone" placeholder="Phone Number" required>
-       </div>
-        <div class="form-group">
-          <label>Date of Birth</label>
-          <select class="form-control "name="dob_month"
-                    placeholder="Month" autofocus="" required>
-              <option value="01">January</option>
-              <option value="02">February</option>
-              <option value="03">March</option>
-              <option value="04">April</option>
-              <option value="05">May</option>
-              <option value="06">June</option>
-              <option value="07">July</option>
-              <option value="08">August</option>
-              <option value="09">September</option>
-              <option value="10">October</option>
-              <option value="11">November</option>
-              <option value="12">December</option>
-            </select>
-          <select class="form-control "name="dob_day"
-                  placeholder="Day" autofocus="" required>
-            {% for day in days %}
-            <option value="{{day}}">{{day}}</option>
-            {% endfor %}
-          </select>
-          <select class="form-control "name="dob_year"
-                  placeholder="Year" autofocus="" required>
-            {% for year in years %}
-              <option value="{{year}}">{{year}}</option>
-            {%  endfor %}
-          </select>
-        </div>
-
-         <div class="form-group">
-           <label>Bank Information</label>
-           <input class="form-control" type="text" name="account_number" placeholder="Checking Account Number" required>
-           <input class="form-control" type="text" name="routing_number" placeholder="Routing Number" required>
-          </div>
-         <div class="form-group">
-           <label>Last four of Social</label>
-           <input class="form-control" type="password" name="ssn_last_4" placeholder="Last 4 SSN">
-         </div>
-
-         <div class="form-group">
-            <label>Do you accept the <a href="https://stripe.com/connect-account/legal">Terms of Service</a>?</label>
-            <select class="form-control" name="tos_accept" de="No" autofocus="" required>
-              <option value="False">No</option>
-              <option value="True">Yes</option>
-            </select>
-          </div>
-
-        <button class="btn btn-primary" style="margin-top: 10px;">Submit</button>
-      </form>
+        <button><a href="https://connect.stripe.com/express/oauth/authorize?redirect_uri=http://127.0.0.1:5000/stripe_auth&client_id=ca_Gk2G8OaZ5AwgppO4z4aUVv3OHPsBs18T&state=12345">Auth Stripe</a></button>
     </div>
   </div>
   {% endif %}

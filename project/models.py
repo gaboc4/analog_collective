@@ -14,7 +14,6 @@ class Users(UserMixin, db.Model):
     spot_auth = db.Column(db.Boolean)
     credits = db.Column(db.Integer)
     payment_info = db.Column(db.String(1000))
-    stripe_approval_needed = db.Column(db.Boolean)
 
     def __init__(self, first_name, last_name, email, password, user_type):
         self.first_name = first_name
