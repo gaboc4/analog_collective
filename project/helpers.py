@@ -6,7 +6,8 @@ from spotipy import oauth2
 from collections import OrderedDict
 from datetime import datetime
 
-from .models import SimilarArtists, ArtistTracks, PlaylistDetails, ArtistsInPlaylist, SpotifyToken
+from .models import SimilarArtists, ArtistTracks, PlaylistDetails, ArtistsInPlaylist, SpotifyToken, \
+	PlaylistToPlacedSong
 from . import db
 
 scopes = 'playlist-modify-public'
@@ -54,11 +55,13 @@ def get_playlist_genre(artist_list, sp):
 def get_curr_sim_artists(user_id, sp):
 	sa = SimilarArtists.query.filter_by(artist_id=user_id).first()
 	if sa is not None:
-		return {'similar_artist_1': sp.artist(sa.similar_artist_1)['name'],
-		        'similar_artist_2': sp.artist(sa.similar_artist_2)['name'],
-		        'similar_artist_3': sp.artist(sa.similar_artist_3)['name'],
-		        'similar_artist_4': sp.artist(sa.similar_artist_4)['name'],
-		        'similar_artist_5': sp.artist(sa.similar_artist_5)['name']}
+		sim_artists = OrderedDict()
+		sim_artists['similar_artist_1'] = sp.artist(sa.similar_artist_1)['name']
+		sim_artists['similar_artist_2'] = sp.artist(sa.similar_artist_2)['name']
+		sim_artists['similar_artist_3'] = sp.artist(sa.similar_artist_3)['name']
+		sim_artists['similar_artist_4'] = sp.artist(sa.similar_artist_4)['name']
+		sim_artists['similar_artist_5'] = sp.artist(sa.similar_artist_5)['name']
+		return sim_artists
 	else:
 		return None
 
@@ -72,10 +75,12 @@ def get_curr_artist_tracks(user_id):
 		track_dict['track_name'] = track.track_name
 		track_dict['track_link'] = track.track_link
 		track_dict['track_summary'] = track.track_summary
-		if track.placed_playlist_id is None:
-			track_dict['playlist'] = ""
-		else:
-			track_dict['playlist'] = PlaylistDetails.query.filter_by(id=track.placed_playlist_id).first().name
+		placed_playlists = PlaylistToPlacedSong.query.filter_by(song_id=track.id).all()
+		track_dict['placed_playlists'] = []
+		if len(placed_playlists) != 0:
+			for playlist in placed_playlists:
+				playlist_name = PlaylistDetails.query.filter_by(id=playlist.playlist_id).first().name
+				track_dict['placed_playlists'].append(playlist_name)
 		final_list_of_tracks.append(track_dict)
 	return final_list_of_tracks
 
@@ -88,7 +93,7 @@ def refresh_playlist_deets(p_uri, sp):
 	overall_genre = get_playlist_genre(
 		[track['track']['artists'][0]['uri'] for track in sp_playlist_deets['tracks']['items']], sp)
 	stored_playlist.num_followers = sp_playlist_deets['followers']['total']
-	stored_playlist.num_tracks = len(sp_playlist_deets['tracks']['items'])
+	stored_playlist.num_tracks = sp_playlist_deets['tracks']['total']
 	stored_playlist.overall_genre = overall_genre
 	stored_playlist.last_updated = datetime.now()
 

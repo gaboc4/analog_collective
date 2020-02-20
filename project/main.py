@@ -8,7 +8,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash,
 from flask_login import login_required, current_user
 
 from .models import Users, PlaylistDetails, SpotifyToken, ArtistsInPlaylist, \
-	ArtistTracks, SimilarArtists
+	ArtistTracks, SimilarArtists, PlaylistToPlacedSong
 from . import db
 from .helpers import refresh_access_token, get_access_and_refresh, \
 	get_playlist_genre, get_curr_artist_tracks, get_curr_sim_artists, refresh_playlist_deets
@@ -232,24 +232,27 @@ def artist_song():
 	                        request.form.get('similar_artist5_uri')]
 	song_description = request.form.get('song_description') if request.form.get('song_description') is not None else ""
 
-	try:
-		song_details = sp.track(song_uri)
-	except spotipy.client.SpotifyException as e:
-		flash("There was an issue retrieving your requested track from Spotify, please \
-           check your URI, make sure it is a track link not an album one and try again")
-		return redirect(url_for('main.artist_profile'))
+	if song_uri != '':
+		try:
+			song_details = sp.track(song_uri)
+			new_track = ArtistTracks(user.id, song_details['name'], song_description,
+			                         song_details['external_urls']['spotify'], song_uri)
+			db.session.add(new_track)
+			db.session.commit()
+		except spotipy.client.SpotifyException as e:
+			flash("There was an issue retrieving your requested track from Spotify, please \
+	           check your URI, make sure it is a track link not an album one and try again")
+			return redirect(url_for('main.artist_profile'))
 
 	try:
-		all_artists = sp.artists(uploaded_artist_uris)['artists']
+		if len([x for x in uploaded_artist_uris if x != '']) != 0:
+			all_artists = sp.artists([x for x in uploaded_artist_uris if x != ''])['artists']
 	except spotipy.client.SpotifyException as e:
 		flash("There was an issue retrieving your similar artists from Spotify, "
 		      "please make sure your URIs are correct and try again.")
 		return redirect(url_for('main.artist_profile'))
 
-	new_track = ArtistTracks(user.id, song_details['name'], song_description,
-	                         song_details['external_urls']['spotify'], song_uri, None)
-	db.session.add(new_track)
-	db.session.commit()
+
 
 	if SimilarArtists.query.filter_by(artist_id=user.id).first() is None:
 		similar_artists = SimilarArtists(user.id,
@@ -264,17 +267,20 @@ def artist_song():
 		sim_artists = [sim_artists.similar_artist_1, sim_artists.similar_artist_2, sim_artists.similar_artist_3,
 		               sim_artists.similar_artist_4, sim_artists.similar_artist_5]
 		intersection_artists = []
+		if len(uploaded_artist_uris) != len(sim_artists):
+			for i in range(len(sim_artists) - len(uploaded_artist_uris) + 1):
+				uploaded_artist_uris.append('')
 		for old, new in zip(sim_artists, uploaded_artist_uris):
-			if new is None or old == new:
+			if new == '' or old == new:
 				intersection_artists.append(old)
 			elif old != new:
 				intersection_artists.append(new)
 		curr_sim_artists = SimilarArtists.query.filter_by(artist_id=user.id).first()
 		curr_sim_artists.similar_artist_1 = intersection_artists[0]
-		curr_sim_artists.similar_artist_2 = intersection_artists[0]
-		curr_sim_artists.similar_artist_3 = intersection_artists[0]
-		curr_sim_artists.similar_artist_4 = intersection_artists[0]
-		curr_sim_artists.similar_artist_5 = intersection_artists[0]
+		curr_sim_artists.similar_artist_2 = intersection_artists[1]
+		curr_sim_artists.similar_artist_3 = intersection_artists[2]
+		curr_sim_artists.similar_artist_4 = intersection_artists[3]
+		curr_sim_artists.similar_artist_5 = intersection_artists[4]
 	db.session.commit()
 
 	return redirect(url_for('main.artist_profile'))
@@ -287,21 +293,27 @@ def add_song_to_playlist():
 		user = Users.query.filter_by(email=current_user.email).first()
 		plist_id = request.args.get('plist_id')
 		song_to_add_uri = request.args.get('song_id')
-		song_db_data = ArtistTracks.query.filter_by(track_uri=song_to_add_uri).first()
-		song_db_data.placed_playlist_id = int(plist_id)
 
+		# Alter database section ---------------------------------------
 		user.credits = user.credits - 1
 
 		playlist = PlaylistDetails.query.filter_by(id=plist_id).first()
 		playlist.placement_rate += 1
-		db.session.commit()
 
-		playlist_user_id = playlist.user_id
-		spotify_login = SpotifyToken.query.filter_by(user_id=playlist_user_id).first()
-		sp = refresh_access_token(SpotifyToken.query.filter_by(user_id=playlist_user_id).first().refresh_token,
-		                          playlist_user_id)
+		song_db_data = ArtistTracks.query.filter_by(track_uri=song_to_add_uri).order_by(ArtistTracks.id.desc()).first()
+
+		song_to_playlist = PlaylistToPlacedSong(playlist_id=playlist.id, song_id=song_db_data.id)
+		db.session.add(song_to_playlist)
+		db.session.commit()
+		# ---------------------------------------------------------------
+
+		spotify_login = SpotifyToken.query.filter_by(user_id=playlist.user_id).first()
+		sp = refresh_access_token(SpotifyToken.query.filter_by(user_id=playlist.user_id).first().refresh_token,
+		                          playlist.user_id)
 		sp.user_playlist_add_tracks(user=spotify_login.spotify_user_id, playlist_id=str(playlist.playlist_uri),
 		                            tracks=[song_to_add_uri])
+
+		refresh_playlist_deets(playlist.playlist_uri, sp)
 
 		return json.dumps({'success': True}), 200
 	except Exception as e:

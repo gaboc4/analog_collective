@@ -31,14 +31,18 @@
       <div class="my-3 py-3">
         <h2 class="display-5">New Song Input</h2>
         <p>Enter a song you would like to add to the platform and let us know what artists you think you sound like
-            here. If you want to update your similar artists you must update all of them at the same time, even
-            if you are keeping some the same - otherwise they can be left empty</p>
+            here. You can choose to add a song and any number of artists here at a given time, or
+            only upload a song, or only update your similar artists. If you would like to update a
+            specific similar artist, just submit a new one in the field that corresponds to their position
+            in the table below.</p>
       </div>
       {% include 'song_form.html' %}
     </div>
     <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
       <div class="my-3 p-3">
         <h2 class="display-5">Related Playlists</h2>
+        <p>These are the same as the playlists below and are populated based on genre match of your
+            tracks.</p>
       </div>
           {% if playlist_embed_urls %}
             {% for url in playlist_embed_urls %}
@@ -74,7 +78,13 @@
                       <td scope="row"><a href="{{track[key]}}" id="{{track['track_uri']}}"
                                          target="_blank">Link to Track</a></td>
                     {% elif not key.startswith('track_uri')%}
-                      <td scope="row" style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
+                      {% if key.startswith('placed_playlist') and track[key]|length > 0 %}
+                        <td scope="row" style="word-wrap: break-word;max-width: 160px;">{{track[key]|join(', ')}}</td>
+                      {% elif key.startswith('placed_playlist') and track[key]|length == 0 %}
+                        <td scope="row" style="word-wrap: break-word;max-width: 160px;"></td>
+                      {% else %}
+                        <td scope="row" style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
+                      {% endif %}
                     {% endif %}
                   {% endfor %}
                 </tr>

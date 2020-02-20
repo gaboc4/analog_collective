@@ -104,12 +104,20 @@ class ArtistTracks(UserMixin, db.Model):
     track_summary = db.Column(db.String(1000))
     track_link = db.Column(db.String(1000))
     track_uri = db.Column(db.String(1000))
-    placed_playlist_id = db.Column(db.Integer, db.ForeignKey('playlist_details.id'))
 
-    def __init__(self, artist_id, track_name, track_summary, track_link, track_uri, placed_playlist_id):
+    def __init__(self, artist_id, track_name, track_summary, track_link, track_uri):
         self.artist_id = artist_id
         self.track_name = track_name
         self.track_summary = track_summary
         self.track_link = track_link
         self.track_uri = track_uri
-        self.placed_playlist_id = placed_playlist_id
+
+
+class PlaylistToPlacedSong(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    playlist_id = db.Column(db.Integer)
+    song_id = db.Column(db.Integer)
+
+    def __init__(self, playlist_id, song_id):
+        self.playlist_id = playlist_id
+        self.song_id = song_id
