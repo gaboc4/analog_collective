@@ -11,15 +11,25 @@
     </div>
   </div>
 
-  {% if approval_needed %}
+
   <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light">
     <div class="col-md-5 p-lg-5 mx-auto my-5">
       <div class="my-3 p-3">
+        {% if approval_needed %}
+        <h2>Create a Stripe Account</h2>
+        <p>Looks like this is your first time logging onto the platform, welcome! In order to get paid for songs that
+        are added to your playlist, you need to create an account through Stripe. Once it's created, a link will appear
+        here and you will be able to manage your dashboard through them </p>
       </div>
-        <button><a href="https://connect.stripe.com/express/oauth/authorize?redirect_uri=http://127.0.0.1:5000/stripe_auth&client_id=ca_Gk2G8OaZ5AwgppO4z4aUVv3OHPsBs18T&state=12345">Auth Stripe</a></button>
+        <a href="{{stripe_signup}}"><button>Auth Stripe</button></a>
+      {% else %}
+      <h2>Access your Stripe account</h2>
+      </div>
+        <a href="{{stripe_account_link}}"><button>Stripe Account</button></a>
+      {% endif %}
     </div>
   </div>
-  {% endif %}
+
 
   <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
     <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">

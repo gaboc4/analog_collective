@@ -84,9 +84,14 @@ def playlister_profile():
 
 	if user.payment_info is None:
 		return render_template('playlister_profile.html', name=current_user.first_name, playlist_dict=playlist_dict,
+		                       stripe_signup="https://connect.stripe.com/express/oauth/authorize?redirect_uri="
+		                                     "http://127.0.0.1:5000/stripe_auth&client_id="
+		                                     "ca_Gk2G8OaZ5AwgppO4z4aUVv3OHPsBs18T&state=12345",
 		                       approval_needed=True)
 
-	return render_template('playlister_profile.html', name=current_user.first_name, playlist_dict=playlist_dict)
+	stripe_account_link = stripe.Account.create_login_link(user.payment_info)['url']
+	return render_template('playlister_profile.html', name=current_user.first_name, playlist_dict=playlist_dict,
+	                       stripe_account_link=stripe_account_link)
 
 
 @main.route('/playlister_profile', methods=['POST'])
@@ -102,13 +107,9 @@ def check_playlist():
 
 	playlist = sp.playlist(playlist_id=uri, fields='name,followers,tracks')
 
-	# playlist_links = [playlist.playlist_uri for playlist in
-	#                   PlaylistDetails.query.filter_by(user_id=user.id).all()]
-	# if (playlist['followers']['total']) < 750:
-	# 	return render_template('playlister_profile.html',
-	# 												 name=current_user.first_name,
-	# 												 too_short=True,
-	# 												 playlist_dict=PlaylistDetails.query.filter_by(user_id=user.id).all())
+	if (playlist['followers']['total']) < 750:
+		return render_template('playlister_profile.html', name=current_user.first_name, too_short=True,
+		                       playlist_dict=PlaylistDetails.query.filter_by(user_id=user.id).all())
 
 	if PlaylistDetails.query.filter_by(playlist_uri=uri).first() is None:
 		overall_genre = get_playlist_genre([track['track']['artists'][0]['uri']
@@ -127,15 +128,9 @@ def check_playlist():
 			db.session.add(artist_in_playlist)
 			db.session.commit()
 	else:
-		return render_template('playlister_profile.html',
-		                       name=current_user.first_name,
-		                       already_added=True,
+		return render_template('playlister_profile.html', name=current_user.first_name, already_added=True,
 		                       playlist_dict=PlaylistDetails.query.filter_by(user_id=user.id).all())
-	return render_template('playlister_profile.html',
-	                       name=current_user.first_name,
-	                       too_short=False,
-	                       playlist_dict=PlaylistDetails.query.filter_by(
-		                       user_id=user.id).all())
+	return redirect(url_for('main.playlister_profile'))
 
 
 @main.route('/artist_profile')
