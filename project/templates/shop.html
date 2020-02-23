@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="body-margin shopPage">
+<div class="body-margin">
   <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
     <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
       <div class="my-3 py-3">
@@ -19,17 +19,17 @@
                 <tr>
                   <td scope="row">10</td>
                   <td>10</td>
-                  <td>$59.99</td>
+                  <td>$50</td>
                 </tr>
                 <tr>
                   <td scope="row">50</td>
                   <td>50</td>
-                  <td>$249.99</td>
+                  <td>$250</td>
                 </tr>
                 <tr>
                   <td scope="row">100</td>
                   <td>100</td>
-                  <td>$449.99</td>
+                  <td>$450</td>
                 </tr>
               </tbody>
             </table>
@@ -40,7 +40,7 @@
       <div class="my-3 p-3">
         <h2 class="display-5">Current Credits: {{tokens}}</h2>
       </div>
-        <form id="payment-form">
+        <form id="payment-form" action="/shop">
           <div class="form-group">
             <label>Name</label>
             <input id="cardholder-name" class="form-control" type="text" value="{{user_name}}">
@@ -53,14 +53,35 @@
               <option value="100">100</option>
             </select>
           </div>
-          <label>Card Details</label>
-          <div id="card-element" class="form-group"><!-- placeholder for Elements --></div>
-          <button id="card-button" class="btn btn-primary">Submit Payment</button>
-          <p id="payment-result">{{error}}</p>
+          {% if payment_info == None %}
+            <div class="form-group">
+              <label>Card Number</label>
+              <input class="form-control " type="text" name="song_uri"
+                    placeholder="Card Number" autofocus="">
+            </div>
+          <div class="form-group">
+              <label>Card Number</label>
+              <input class="form-control " type="text" name="song_uri"
+                    placeholder="Card Number" autofocus="">
+            </div>
+          {% endif %}
+            <button id="card-button" class="btn btn-primary">Submit Payment</button>
+            <p id="payment-result">{{error}}</p>
+
         </form>
       </div>
     </div>
   </div>
+  {% for message in get_flashed_messages() %}
+  <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
+    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+      <div class="my-3 py-3">
 
+        <h3>{{ message }}</h3>
+
+      </div>
+    </div>
+  </div>
+      {% endfor %}
 </div>
 {% endblock %}

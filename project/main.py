@@ -196,8 +196,6 @@ def artist_song():
 		      "please make sure your URIs are correct and try again.")
 		return redirect(url_for('main.artist_profile'))
 
-
-
 	if SimilarArtists.query.filter_by(artist_id=user.id).first() is None:
 		similar_artists = SimilarArtists(user.id,
 		                                 request.form.get('similar_artist1_uri'),
@@ -248,6 +246,36 @@ def add_song_to_playlist():
 
 		song_to_playlist = PlaylistToPlacedSong(playlist_id=playlist.id, song_id=song_db_data.id)
 		db.session.add(song_to_playlist)
+
+		playlister = Users.query.filter_by(id=playlist.user_id).first()
+		# if 1000 < playlist.num_followers < 5000:
+		# 	payout = stripe.Payout.create(
+		# 		amount=300,
+		# 		currency='usd',
+		# 		method='standard',
+		# 		stripe_account=playlister.payment_info
+		# 	)
+		# elif 5000 < playlist.num_followers < 20000:
+		# 	payout = stripe.Payout.create(
+		# 		amount=600,
+		# 		currency='usd',
+		# 		method='standard',
+		# 		stripe_account=playlister.payment_info
+		# 	)
+		# elif 20000 < playlist.num_followers:
+		# 	payout = stripe.Payout.create(
+		# 		amount=900,
+		# 		currency='usd',
+		# 		method='standard',
+		# 		stripe_account=playlister.payment_info
+		# 	)
+		payout = stripe.Payout.create(
+			amount=900,
+			currency='usd',
+			method='standard',
+			stripe_account=playlister.payment_info)
+		print(payout)
+
 		db.session.commit()
 		# ---------------------------------------------------------------
 
