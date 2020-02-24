@@ -11,37 +11,38 @@ payment = Blueprint('payment', __name__)
 stripe.api_key = os.environ['STRIPE_KEY']
 
 
-@payment.route('/shop', methods=['GET', 'POST'])
+@payment.route('/shop')
+@login_required
+def shop():
+    user = Users.query.filter_by(email=current_user.email).first()
+    curr_credits = user.credits if user.credits is not None else 0
+    if user.payment_info is None:
+        customer = stripe.Customer.create(
+            email=user.email
+        )
+        intent = stripe.SetupIntent.create(
+            customer=customer['id']
+        )
+        user.payment_info = customer['id']
+        return render_template('shop.html', payment_info=0, client_secret=intent.client_secret,
+                               tokens=curr_credits, user_name=user.first_name + " " + user.last_name)
+    return render_template('shop.html', payment_info=1,
+                           tokens=curr_credits, user_name=user.first_name + " " + user.last_name)
+
+
+@payment.route('/payment_form', methods=['POST'])
 @login_required
 def purchase_tokens():
     user = Users.query.filter_by(email=current_user.email).first()
-    curr_credits = user.credits if user.credits is not None else 0
-    if request.method == 'GET':
+    new_credits = request.form.get('credit-amount')
+    try:
 
-        return render_template('shop.html', payment_info=user.payment_info,
-                               tokens=curr_credits, user_name=user.first_name + " " + user.last_name)
-    elif request.method == "POST":
-        new_credits = request.form.get('credit-amount')
-        try:
-            customer = stripe.Customer.create(
-                email=user.email,
-                source={
-                    'object': 'card',
-                    'number': request.form.get('card_number'),
-                    'exp_month': request.form.get('exp_month'),
-                    'exp_year': request.form.get('exp_year'),
-                    'cvc': request.form.get('cvc'),
-                    'name': user.first_name + " " + user.last_name
-                },
-            )
-            user.credits += int(new_credits)
-            user.payment_info = customer['id']
-            db.session.commit()
-        except Exception as e:
-            flash(e)
-            flash('Error processing your card, please try again')
+        user.credits += int(new_credits)
+        db.session.commit()
+    except Exception as e:
+        flash(e)
+        flash('Error processing your card, please try again')
     return redirect(url_for('payment.shop'))
-
 
 
 # @payment.route('/shop/', methods=['GET', 'POST'])

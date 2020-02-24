@@ -60,70 +60,25 @@ $(document).ready(function() {
     }
   }
 
+  function stripeTokenHandler(token) {
+	  // Insert the token ID into the form so it gets submitted to the server
+	  var form = document.getElementById('payment-form');
+	  var hiddenInput = document.createElement('input');
+	  hiddenInput.setAttribute('type', 'hidden');
+	  hiddenInput.setAttribute('name', 'stripeToken');
+	  hiddenInput.setAttribute('value', token.id);
+	  form.appendChild(hiddenInput);
 
+	  // Submit the form
+	  form.submit();
+	}
 
+	var stripe =  Stripe(env.STRIPE_PK);
+	var elements = stripe.elements();
+	var cardElement = elements.create('card');
+	cardElement.mount('#card-element');
 
   table.column( 0 ).visible( false );
 
-//  if ($(".shopPage")[0]) {
-//    var stripe = Stripe('pk_test_jdpZ0e0VuV3QPYHePcK21chZ0033T1alyY');
-//
-//    var elements = stripe.elements();
-//    var cardElement = elements.create('card');
-//    cardElement.mount('#card-element');
-//
-//    var cardholderName = document.getElementById('cardholder-name');
-//    var form = document.getElementById('payment-form');
-//
-//    var resultContainer = document.getElementById('payment-result');
-//    cardElement.addEventListener('change', function(event) {
-//      if (event.error) {
-//        resultContainer.textContent = event.error.message;
-//      } else {
-//        resultContainer.textContent = '';
-//      }
-//    });
-//
-//    form.addEventListener('submit', function(event) {
-//      event.preventDefault();
-//      resultContainer.textContent = "";
-//      stripe.createPaymentMethod({
-//        type: 'card',
-//        card: cardElement,
-//        billing_details: {name: cardholderName.value}
-//      }).then(handlePaymentMethodResult);
-//    });
-//
-//    function handlePaymentMethodResult(result) {
-//      if (result.error) {
-//        // An error happened when collecting card details, show it in the payment form
-//        resultContainer.textContent = result.error.message;
-//      } else {
-//        creditAmount = document.getElementById('credit-amount').value;
-//        if (creditAmount == 10) {price = 6000}
-//        else if (creditAmount == 50) {price = 25000}
-//        else if (creditAmount == 100) {price = 45000}
-//        else {return alert("Please make sure you enter one of the valid credit options from the table");}
-//        fetch('/shop/', {
-//          method: 'POST',
-//          headers: { 'Content-Type': 'application/json' },
-//          body: JSON.stringify({ payment_method_id: result.paymentMethod.id ,
-//                                  price: price, new_credits: creditAmount})
-//        }).then(function(result) {
-//          return result.json();
-//        }).then(handleServerResponse);
-//      }
-//    }
-//
-//    function handleServerResponse(responseJson) {
-//      if (responseJson.error) {
-//        // An error happened when charging the card, show it in the payment form
-//        alert("Error processing payment, please try again");
-//      } else {
-//        // Show a success message
-//        $('#purchaseCard').append( "<p>Thank you! You will be redirected to your profile in a moment</p>" );
-//        window.location.href = "/artist_profile";
-//      }
-//    }
-//  }
-//});
+
+});

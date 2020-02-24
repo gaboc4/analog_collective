@@ -40,7 +40,7 @@
       <div class="my-3 p-3">
         <h2 class="display-5">Current Credits: {{tokens}}</h2>
       </div>
-        <form id="payment-form" action="/shop">
+        <form id="payment-form"  method="POST" action="/payment_form" data-secret="{{ client_secret }}">
           <div class="form-group">
             <label>Name</label>
             <input id="cardholder-name" class="form-control" type="text" value="{{user_name}}">
@@ -53,19 +53,17 @@
               <option value="100">100</option>
             </select>
           </div>
-          {% if payment_info == None %}
-            <div class="form-group">
-              <label>Card Number</label>
-              <input class="form-control " type="text" name="song_uri"
-                    placeholder="Card Number" autofocus="">
-            </div>
-          <div class="form-group">
-              <label>Card Number</label>
-              <input class="form-control " type="text" name="song_uri"
-                    placeholder="Card Number" autofocus="">
-            </div>
+          {% if payment_info == 0 %}
+            <h3>Card Details</h3>
+            <p>Enter your card details below as this is your first time accessing the shop, but you won't be charged
+            until you actually place your song onto a playlist. We will save your card so that you don't have
+            to enter it each time.</p>
+            <!-- placeholder for Elements -->
+            <div id="card-element"></div>
+          {% else %}
+            <p>Your payment info has been saved from your last purchase so you don't have to enter it again</p>
           {% endif %}
-            <button id="card-button" class="btn btn-primary">Submit Payment</button>
+            <button id="card-button">Submit Purchase</button>
             <p id="payment-result">{{error}}</p>
 
         </form>
