@@ -36,12 +36,23 @@ def purchase_tokens():
     user = Users.query.filter_by(email=current_user.email).first()
     new_credits = request.form.get('credit-amount')
     try:
-
+        token = stripe.Token.create(
+            card={
+                'number': request.form.get('card_number'),
+                'exp_month': request.form.get('exp_month'),
+                'exp_year': request.form.get('exp_year'),
+                'cvc': request.form.get('cvc')
+            }
+        )
+        stripe.Customer.create_source(
+            user.payment_info,
+            source=token['id']
+        )
         user.credits += int(new_credits)
         db.session.commit()
-    except Exception as e:
-        flash(e)
-        flash('Error processing your card, please try again')
+    except stripe.error.CardError as e:
+        flash(e.error.message)
+        return redirect(url_for('payment.shop'))
     return redirect(url_for('payment.shop'))
 
 

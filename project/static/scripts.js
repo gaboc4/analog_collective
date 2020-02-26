@@ -60,23 +60,22 @@ $(document).ready(function() {
     }
   }
 
-  function stripeTokenHandler(token) {
-	  // Insert the token ID into the form so it gets submitted to the server
-	  var form = document.getElementById('payment-form');
-	  var hiddenInput = document.createElement('input');
-	  hiddenInput.setAttribute('type', 'hidden');
-	  hiddenInput.setAttribute('name', 'stripeToken');
-	  hiddenInput.setAttribute('value', token.id);
-	  form.appendChild(hiddenInput);
+  function cc_format(value) {
+    var v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
+    var matches = v.match(/\d{4,16}/g);
+    var match = matches && matches[0] || ''
+    var parts = []
 
-	  // Submit the form
-	  form.submit();
-	}
+    for (i=0, len=match.length; i<len; i+=4) {
+        parts.push(match.substring(i, i+4))
+    }
 
-	var stripe =  Stripe(env.STRIPE_PK);
-	var elements = stripe.elements();
-	var cardElement = elements.create('card');
-	cardElement.mount('#card-element');
+    if (parts.length) {
+        return parts.join(' ')
+    } else {
+        return value
+    }
+}
 
   table.column( 0 ).visible( false );
 

@@ -58,8 +58,42 @@
             <p>Enter your card details below as this is your first time accessing the shop, but you won't be charged
             until you actually place your song onto a playlist. We will save your card so that you don't have
             to enter it each time.</p>
-            <!-- placeholder for Elements -->
-            <div id="card-element"></div>
+          <script>
+              function cc_format() {
+                  var field = document.getElementById('card-number');
+                  var value = document.getElementById('card-number').value;
+                  var v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
+                  var matches = v.match(/\d{4,16}/g);
+                  var match = matches && matches[0] || ''
+                  var parts = []
+
+                  for (i=0, len=match.length; i<len; i+=4) {
+                      parts.push(match.substring(i, i+4))
+                  }
+
+                  if (parts.length) {
+                      field.value =  parts.join(' ')
+                  } else {
+                      field.value = value
+                  }
+              }
+          </script>
+            <div class="form-group">
+              <input class="form-control " type="text" name="card_number" id="card-number"
+                    placeholder="Card Number" autofocus="" onchange="cc_format()">
+            </div>
+            <div class="form-group">
+              <input class="form-control " type="number" name="exp_month"
+                    placeholder="MM" autofocus="" max="12" min="1">
+            </div>
+            <div class="form-group">
+              <input class="form-control " type="number" name="exp_year"
+                    placeholder="YYYY" autofocus="" min="2020" max="2060">
+            </div>
+            <div class="form-group">
+              <input class="form-control " type="number" name="cvc"
+                    placeholder="CVC" autofocus="" min="100" max="999">
+            </div>
           {% else %}
             <p>Your payment info has been saved from your last purchase so you don't have to enter it again</p>
           {% endif %}
