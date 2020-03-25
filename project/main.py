@@ -3,12 +3,12 @@ import re
 import spotipy
 import os
 import stripe
-import time
+from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, request, flash, get_flashed_messages
 from flask_login import login_required, current_user
 
 from .models import Users, PlaylistDetails, SpotifyToken, ArtistsInPlaylist, \
-	ArtistTracks, SimilarArtists, PlaylistToPlacedSong
+	ArtistTracks, SimilarArtists, PlaylistToPlacedSong, BlogPosts
 from . import db
 from .helpers import refresh_access_token, get_access_and_refresh, \
 	get_playlist_genre, get_curr_artist_tracks, get_curr_sim_artists, refresh_playlist_deets
@@ -290,3 +290,23 @@ def add_song_to_playlist():
 		return json.dumps({'success': True}), 200
 	except Exception as e:
 		return json.dumps({'fail': e}), 500
+
+
+@main.route('/blog')
+@login_required
+def blog():
+	posts = BlogPosts.query.all()
+	return render_template('blog.html', posts=posts, user_email=current_user.email)
+
+
+@main.route('/blog', methods=['POST'])
+@login_required
+def blog_post():
+	if current_user.email == "will@analogcollective.com":
+		title = request.form.get('post_title')
+		content = request.form.get('post_content')
+		new_post = BlogPosts(title=title, date=datetime.now().strftime('%Y-%m-%d'), content=content)
+		db.session.add(new_post)
+		db.session.commit()
+		return redirect(url_for('main.blog'))
+	return redirect(url_for('main.blog'))

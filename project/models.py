@@ -120,3 +120,15 @@ class PlaylistToPlacedSong(UserMixin, db.Model):
     def __init__(self, playlist_id, song_id):
         self.playlist_id = playlist_id
         self.song_id = song_id
+
+
+class BlogPosts(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(1000))
+    date = db.Column(db.DateTime)
+    content = db.Column(db.String(1000000))
+
+    def __init__(self, title, date, content):
+        self.title = title
+        self.date = date
+        self.content = content

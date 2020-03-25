@@ -60,24 +60,68 @@ $(document).ready(function() {
     }
   }
 
-  function cc_format(value) {
-    var v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
-    var matches = v.match(/\d{4,16}/g);
-    var match = matches && matches[0] || ''
-    var parts = []
+	var stripe =  Stripe(env.STRIPE_PK);
+	var elements = stripe.elements();
+	var cardElement = elements.create('card');
+	cardElement.mount('#card-element');
 
-    for (i=0, len=match.length; i<len; i+=4) {
-        parts.push(match.substring(i, i+4))
-    }
+	var cardholderName = document.getElementById('cardholderName');
+	var cardButton = document.getElementById('card-button');
+	var clientSecret = cardButton.dataset.secret;
 
-    if (parts.length) {
-        return parts.join(' ')
-    } else {
-        return value
-    }
-}
+	cardButton.addEventListener('click', function(ev) {
+	  stripe.confirmCardSetup(
+	    clientSecret,
+	    {
+	      payment_method: {
+	        card: cardElement,
+	        billing_details: {
+	          name: cardholderName.value,
+	        },
+	      },
+	    }
+	  ).then(function(result) {
+	    if (result.error) {
+          changeLoadingState(false);
+          var displayError = document.getElementById("card-errors");
+          displayError.textContent = result.error.message;
+	    } else {
+	      orderComplete(stripe, clientSecret);
+	    }
+	  });
+	});
 
-  table.column( 0 ).visible( false );
+
+	/* Shows a success / error message when the payment is complete */
+	var orderComplete = function(stripe, clientSecret) {
+	  stripe.retrieveSetupIntent(clientSecret).then(function(result) {
+	    var setupIntent = result.setupIntent;
+	    var setupIntentJson = JSON.stringify(setupIntent, null, 2);
+
+	    document.querySelector(".sr-payment-form").classList.add("hidden");
+	    document.querySelector(".sr-result").classList.remove("hidden");
+	    document.querySelector("pre").textContent = setupIntentJson;
+	    setTimeout(function() {
+	      document.querySelector(".sr-result").classList.add("expand");
+	    }, 200);
+
+	    changeLoadingState(false);
+	  });
+	};
+
+	var changeLoadingState = function(isLoading) {
+  if (isLoading) {
+    document.querySelector("button").disabled = true;
+    document.querySelector("#spinner").classList.remove("hidden");
+    document.querySelector("#button-text").classList.add("hidden");
+  } else {
+    document.querySelector("button").disabled = false;
+    document.querySelector("#spinner").classList.add("hidden");
+    document.querySelector("#button-text").classList.remove("hidden");
+  }
+};
+
+
 
 
 });

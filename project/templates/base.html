@@ -33,6 +33,8 @@
 
 
 	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<!--	<link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">-->
+<!--	<link rel="stylesheet" href="{{ url_for('static', filename='normalize.css') }}">-->
 
 </head>
 
@@ -45,6 +47,8 @@
           <img src="{{ url_for('static', filename='logo_small.png') }}">
         </a>
         <a href="{{ url_for('main.index') }}" class="py-2 d-none d-md-inline-block">Home</a>
+
+				<a href="{{ url_for('main.blog') }}" class="py-2 d-none d-md-inline-block">Blog</a>
 
         {% if current_user.is_authenticated %}
         <a href="{{ url_for('main.profile') }}" class="py-2 d-none d-md-inline-block">Profile</a>

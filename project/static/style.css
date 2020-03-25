@@ -12,6 +12,10 @@
   width:500px;
 }
 
+.post-width {
+	width: 1000px;
+}
+
 .table-in-card {
   max-width: inherit;
 }

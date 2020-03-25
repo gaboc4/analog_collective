@@ -21,9 +21,12 @@ def shop():
             email=user.email
         )
         intent = stripe.SetupIntent.create(
-            customer=customer['id']
+            customer=customer['id'],
+            payment_method_types=["card"]
         )
         user.payment_info = customer['id']
+        db.session.commit()
+        print(intent.client_secret)
         return render_template('shop.html', payment_info=0, client_secret=intent.client_secret,
                                tokens=curr_credits, user_name=user.first_name + " " + user.last_name)
     return render_template('shop.html', payment_info=1,
@@ -35,24 +38,24 @@ def shop():
 def purchase_tokens():
     user = Users.query.filter_by(email=current_user.email).first()
     new_credits = request.form.get('credit-amount')
-    try:
-        token = stripe.Token.create(
-            card={
-                'number': request.form.get('card_number'),
-                'exp_month': request.form.get('exp_month'),
-                'exp_year': request.form.get('exp_year'),
-                'cvc': request.form.get('cvc')
-            }
-        )
-        stripe.Customer.create_source(
-            user.payment_info,
-            source=token['id']
-        )
-        user.credits += int(new_credits)
-        db.session.commit()
-    except stripe.error.CardError as e:
-        flash(e.error.message)
-        return redirect(url_for('payment.shop'))
+    # try:
+    #     token = stripe.Token.create(
+    #         card={
+    #             'number': request.form.get('card_number'),
+    #             'exp_month': request.form.get('exp_month'),
+    #             'exp_year': request.form.get('exp_year'),
+    #             'cvc': request.form.get('cvc')
+    #         }
+    #     )
+    #     stripe.Customer.create_source(
+    #         user.payment_info,
+    #         source=token['id']
+    #     )
+    user.credits += int(new_credits)
+    db.session.commit()
+    # except stripe.error.CardError as e:
+    #     flash(e.error.message)
+    #     return redirect(url_for('payment.shop'))
     return redirect(url_for('payment.shop'))
 
 

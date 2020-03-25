@@ -40,67 +40,31 @@
       <div class="my-3 p-3">
         <h2 class="display-5">Current Credits: {{tokens}}</h2>
       </div>
-        <form id="payment-form"  method="POST" action="/payment_form" data-secret="{{ client_secret }}">
-          <div class="form-group">
-            <label>Name</label>
-            <input id="cardholder-name" class="form-control" type="text" value="{{user_name}}">
-          </div>
+        <form id="payment-form"  method="POST" action="/payment_form">
           <div class="form-group">
             <label>How many credits would you like to purchase?</label>
-            <select class="form-control" id="credit-amount">
+            <select class="form-control" name="credit-amount">
               <option value="10">10</option>
               <option value="50">50</option>
               <option value="100">100</option>
             </select>
           </div>
-          {% if payment_info == 0 %}
-            <h3>Card Details</h3>
-            <p>Enter your card details below as this is your first time accessing the shop, but you won't be charged
-            until you actually place your song onto a playlist. We will save your card so that you don't have
-            to enter it each time.</p>
-          <script>
-              function cc_format() {
-                  var field = document.getElementById('card-number');
-                  var value = document.getElementById('card-number').value;
-                  var v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
-                  var matches = v.match(/\d{4,16}/g);
-                  var match = matches && matches[0] || ''
-                  var parts = []
-
-                  for (i=0, len=match.length; i<len; i+=4) {
-                      parts.push(match.substring(i, i+4))
-                  }
-
-                  if (parts.length) {
-                      field.value =  parts.join(' ')
-                  } else {
-                      field.value = value
-                  }
-              }
-          </script>
-            <div class="form-group">
-              <input class="form-control " type="text" name="card_number" id="card-number"
-                    placeholder="Card Number" autofocus="" onchange="cc_format()">
-            </div>
-            <div class="form-group">
-              <input class="form-control " type="number" name="exp_month"
-                    placeholder="MM" autofocus="" max="12" min="1">
-            </div>
-            <div class="form-group">
-              <input class="form-control " type="number" name="exp_year"
-                    placeholder="YYYY" autofocus="" min="2020" max="2060">
-            </div>
-            <div class="form-group">
-              <input class="form-control " type="number" name="cvc"
-                    placeholder="CVC" autofocus="" min="100" max="999">
-            </div>
-          {% else %}
-            <p>Your payment info has been saved from your last purchase so you don't have to enter it again</p>
-          {% endif %}
-            <button id="card-button">Submit Purchase</button>
-            <p id="payment-result">{{error}}</p>
-
+            <button id="purchase-btn">Submit Purchase</button>
         </form>
+
+          <h3>Card Details</h3>
+          <p>Enter your card details below as this is your first time accessing the shop, but you won't be charged
+          until you actually place your song onto a playlist. We will save your card so that you don't have
+          to enter it each time.</p>
+          <!-- placeholder for Elements -->
+          <form id="setup-form" >
+            <div class="form-group">
+              <input class="form-control" id="cardholderName" value="{{ user_name }}">
+            </div>
+            <div id="card-element"></div>
+            <button id="card-button" data-secret="{{ client_secret }}"> Save Card </button>
+          </form>
+
       </div>
     </div>
   </div>
