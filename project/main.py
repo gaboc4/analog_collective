@@ -65,9 +65,15 @@ def stripe_auth():
 		user.payment_info = connected_account_id
 		db.session.commit()
 		flash('Payment account creation successful!')
-		return redirect(url_for('main.playlister_profile'))
+		if user.user_type == 1:
+			return redirect(url_for('main.playlister_profile'))
+		elif user.user_type == 2:
+			return redirect(url_for('main.artist_profile'))
 	flash('Payment account creation not successful please try again')
-	return redirect(url_for('main.playlister_profile'))
+	if user.user_type == 1:
+		return redirect(url_for('main.playlister_profile'))
+	elif user.user_type == 2:
+		return redirect(url_for('main.artist_profile'))
 
 
 @main.route('/playlister_profile')
@@ -151,10 +157,24 @@ def artist_profile():
 	similar_playlist_ids = [playlist.playlist_uri.split(':')[2] for playlist in similar_playlists]
 	playlist_embed_urls = ["https://open.spotify.com/embed/playlist/%s" % p_id for p_id in similar_playlist_ids]
 
+	if user.payment_info is None:
+		return render_template('artist_profile.html',
+		                       user_name=user.first_name, approval_needed=True,
+		                       playlist_embed_urls=playlist_embed_urls,
+		                       tracks=get_curr_artist_tracks(user.id),
+		                       stripe_signup="https://connect.stripe.com/express/oauth/authorize?redirect_uri="
+		                                     "http://127.0.0.1:5000/stripe_auth&client_id="
+		                                     "ca_Gk2G8OaZ5AwgppO4z4aUVv3OHPsBs18T&state=12345678",
+		                       user_credits=user.credits if user.credits is not None else 0,
+		                       credits_info=credits_info, playlist_dict=similar_playlists,
+		                       related_artists=get_curr_sim_artists(user.id, sp))
+
+	stripe_account_link = stripe.Account.create_login_link(user.payment_info)['url']
 	return render_template('artist_profile.html',
 	                       user_name=user.first_name,
 	                       playlist_embed_urls=playlist_embed_urls,
 	                       tracks=get_curr_artist_tracks(user.id),
+	                       stripe_account_link=stripe_account_link,
 	                       user_credits=user.credits if user.credits is not None else 0,
 	                       credits_info=credits_info, playlist_dict=similar_playlists,
 	                       related_artists=get_curr_sim_artists(user.id, sp))
@@ -269,12 +289,18 @@ def add_song_to_playlist():
 		# 		method='standard',
 		# 		stripe_account=playlister.payment_info
 		# 	)
-		payout = stripe.Payout.create(
-			amount=900,
-			currency='usd',
-			method='standard',
-			stripe_account=playlister.payment_info)
-		print(payout)
+		session = stripe.checkout.Session.create(
+			payment_method_types=['card'],
+			line_items=[{
+				'name': "Analog Collective",
+				'amount': 200,
+				'currency': 'usd',
+				'quantity': 1,
+			}],
+			success_url='http://127.0.0.1:5000/shop_success',
+			cancel_url='http://127.0.0.1:5000/shop_fail',
+			stripe_account=playlister.payment_info,
+		)
 
 		db.session.commit()
 		# ---------------------------------------------------------------
