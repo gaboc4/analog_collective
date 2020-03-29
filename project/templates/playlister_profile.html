@@ -1,95 +1,106 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="body-margin">
-  <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light" style="height: 300px">
-    <div class="col-md-5 p-lg-5 mx-auto my-5">
-       <h1>Welcome back, {{name}}!</h1>
-      {% for message in get_flashed_messages() %}
-        <p>{{ message }}</p>
-      {% endfor %}
-    </div>
-  </div>
+<div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-dark"
+		 style="color: white; margin: 0 !important;">
+	<div class="col-md-5 p-lg-5 mx-auto my-5">
+		<h1>Welcome back, {{name}}!</h1>
+		{% for message in get_flashed_messages() %}
+		<p>{{ message }}</p>
+		{% endfor %}
+	</div>
+
+	<div class="row justify-content-md-center">
+		<div class="col col-lg-5">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					{% if approval_needed %}
+					<h3 class="card-title">Create a Stripe Account</h3>
+					<br>
+					<p>Looks like this is your first time logging onto the platform, welcome! In order to get paid for songs that
+						are added to your playlist, you need to create an account through Stripe. Once it's created, a link will
+						appear here and you will be able to manage your dashboard through them </p>
+					<a href="{{stripe_signup}}">
+						<button class="btn btn-primary">Auth Stripe</button>
+					</a>
+					{% else %}
+					<h2>Access your Stripe account</h2>
+				</div>
+				<a href="{{stripe_account_link}}">
+					<button class="btn btn-primary">Stripe Account</button>
+				</a>
+				{% endif %}
+				<br>
+			</div>
+		</div>
+	</div>
 
 
-  <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light">
-    <div class="col-md-5 p-lg-5 mx-auto my-5">
-      <div class="my-3 p-3">
-        {% if approval_needed %}
-        <h2>Create a Stripe Account</h2>
-        <p>Looks like this is your first time logging onto the platform, welcome! In order to get paid for songs that
-        are added to your playlist, you need to create an account through Stripe. Once it's created, a link will appear
-        here and you will be able to manage your dashboard through them </p>
-      </div>
-        <a href="{{stripe_signup}}"><button>Auth Stripe</button></a>
-      {% else %}
-      <h2>Access your Stripe account</h2>
-      </div>
-        <a href="{{stripe_account_link}}"><button>Stripe Account</button></a>
-      {% endif %}
-    </div>
-  </div>
+	<div class="row ">
+		<div class="col col-lg-6">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					<h3 class="card-title">Your Playlists</h3>
+					<br>
+					{% if playlist_dict|length != 0 %}
+					<table class="table body-margin" style="color: white;">
+						<thead>
+						<tr>
+							<th scope="col">Playlist Name</th>
+							<th scope="col">Playlist URI</th>
+							<th scope="col">Number of Followers</th>
+							<th scope="col">Number of Tracks</th>
+							<th scope="col">Placement Rate</th>
+							<th scope="col">Genre</th>
+						</tr>
+						</thead>
+						<tbody>
+						{% for playlist in playlist_dict %}
+						<tr>
+							<td scope="row">{{playlist.name}}</td>
+							<td>{{playlist.playlist_uri}}</td>
+							<td>{{playlist.num_followers}}</td>
+							<td>{{playlist.num_tracks}}</td>
+							<td>{{playlist.placement_rate}}</td>
+							<td>{{playlist.genre}}</td>
+						</tr>
+						{% endfor %}
+						</tbody>
+					</table>
 
+					{% else %}
+					<p>No playlists yet, add one to the right!</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
 
-  <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
-    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-      <div class="my-3 py-3">
-        <h2 class="display-5">Your Playlists</h2>
-          {% if playlist_dict|length != 0 %}
-          <table class="table body-margin">
-            <thead>
-              <tr>
-                <th scope="col">Playlist Name</th>
-                <th scope="col">Playlist URI</th>
-                <th scope="col">Number of Followers</th>
-                <th scope="col">Number of Tracks</th>
-                <th scope="col">Placement Rate</th>
-                <th scope="col">Genre</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for playlist in playlist_dict %}
-              <tr>
-                <td scope="row">{{playlist.name}}</td>
-                <td>{{playlist.playlist_uri}}</td>
-                <td>{{playlist.num_followers}}</td>
-                <td>{{playlist.num_tracks}}</td>
-                <td>{{playlist.placement_rate}}</td>
-                <td>{{playlist.genre}}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-
-          {% else %}
-          <p>No playlists yet, add one to the right!</p>
-          {% endif %}
-      </div>
-    </div>
-    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-      <div class="my-3 p-3">
-        <h2 class="display-5">Add a playlist here!</h2>
-      </div>
-        <form method="POST" action="/playlister_profile">
-            <div class="form-group">
-                <input class="form-control" type="text" name="playlist_uri" placeholder="Your Playlist URI">
-              <div class="form-group">
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
-                  Search
-                </button>
-              </div>
-            </div>
-          </form>
-          {% if too_short %}
-            <h3> The playlist you submitted does not have enough followers.</h3>
-          {% endif %}
-          {% if already_added %}
-            <h3> The playlist you submitted has already been added to the platform</h3>
-          {% endif %}
-    </div>
-  </div>
-
-
-
+		<div class="col col-lg-6">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					<h3 class="card-title">Add a playlist here!</h3>
+					<br>
+					<form method="POST" action="/playlister_profile">
+						<div class="form-group">
+							<input class="form-control" type="text" name="playlist_uri" placeholder="Your Playlist URI">
+							<div class="form-group">
+								<button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+									Search
+								</button>
+							</div>
+						</div>
+					</form>
+					{% if too_short %}
+					<h3> The playlist you submitted does not have enough followers.</h3>
+					{% endif %}
+					{% if already_added %}
+					<h3> The playlist you submitted has already been added to the platform</h3>
+					{% endif %}
+				</div>
+				<br>
+			</div>
+		</div>
+	</div>
 </div>
+
 {% endblock %}
