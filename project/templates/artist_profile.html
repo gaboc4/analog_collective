@@ -23,24 +23,6 @@
   </div>
 
 
-    <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light">
-      <div class="col-md-5 p-lg-5 mx-auto my-5">
-        <div class="my-3 p-3">
-          {% if approval_needed %}
-          <h2>Create a Stripe Account</h2>
-          <p>Looks like this is your first time logging onto the platform, welcome! In order to get paid for songs that
-          are added to your playlist, you need to create an account through Stripe. Once it's created, a link will appear
-          here and you will be able to manage your dashboard through them </p>
-        </div>
-          <a href="{{stripe_signup}}"><button>Auth Stripe</button></a>
-        {% else %}
-        <h2>Access your Stripe account</h2>
-        </div>
-          <a href="{{stripe_account_link}}"><button>Stripe Account</button></a>
-      {% endif %}
-    </div>
-
-
   <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
     <div class="bg-dark mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
       <div class="my-3 py-3">
@@ -68,7 +50,17 @@
     </div>
   </div>
 
-
+  <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light"
+       style="height: 250px; padding: 0 !important">
+    <div class="col-md-5 p-lg-5 mx-auto my-5" style="padding: 0 !important">
+      <h1>How to add songs to a playlist -</h1>
+      <ul style="text-align: left; margin-left: 10%; margin-top: 5%">
+        <li>Select a song on the left hand table that you have uploaded</li>
+        <li>Select the playlist you want to add the song to on the right hand side</li>
+        <li>Click add to playlist on the table to the right</li>
+      </ul>
+    </div>
+  </div>
 
   <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
     <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">

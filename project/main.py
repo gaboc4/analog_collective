@@ -4,7 +4,7 @@ import spotipy
 import os
 import stripe
 from datetime import datetime
-from flask import Blueprint, render_template, redirect, url_for, request, flash, get_flashed_messages
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 
 from .models import Users, PlaylistDetails, SpotifyToken, ArtistsInPlaylist, \
@@ -15,7 +15,6 @@ from .helpers import refresh_access_token, get_access_and_refresh, \
 
 main = Blueprint('main', __name__)
 
-stripe.api_key = os.environ['STRIPE_KEY']
 
 credits_info = "These tokens represent how much money you have put " \
                "into the platform in order to add your songs to a playlist. " \
@@ -52,7 +51,7 @@ def profile():
 def stripe_auth():
 	user = Users.query.filter_by(email=current_user.email).first()
 	code = request.args.get('code')
-	stripe.api_key = os.environ['STRIPE_KEY']
+	stripe.api_key = os.environ['STRIPE_SK']
 
 	if code:
 		response = stripe.OAuth.token(
@@ -162,19 +161,14 @@ def artist_profile():
 		                       user_name=user.first_name, approval_needed=True,
 		                       playlist_embed_urls=playlist_embed_urls,
 		                       tracks=get_curr_artist_tracks(user.id),
-		                       stripe_signup="https://connect.stripe.com/express/oauth/authorize?redirect_uri="
-		                                     "http://127.0.0.1:5000/stripe_auth&client_id="
-		                                     "ca_Gk2G8OaZ5AwgppO4z4aUVv3OHPsBs18T&state=12345678",
 		                       user_credits=user.credits if user.credits is not None else 0,
 		                       credits_info=credits_info, playlist_dict=similar_playlists,
 		                       related_artists=get_curr_sim_artists(user.id, sp))
 
-	stripe_account_link = stripe.Account.create_login_link(user.payment_info)['url']
 	return render_template('artist_profile.html',
 	                       user_name=user.first_name,
 	                       playlist_embed_urls=playlist_embed_urls,
 	                       tracks=get_curr_artist_tracks(user.id),
-	                       stripe_account_link=stripe_account_link,
 	                       user_credits=user.credits if user.credits is not None else 0,
 	                       credits_info=credits_info, playlist_dict=similar_playlists,
 	                       related_artists=get_curr_sim_artists(user.id, sp))
@@ -268,39 +262,29 @@ def add_song_to_playlist():
 		db.session.add(song_to_playlist)
 
 		playlister = Users.query.filter_by(id=playlist.user_id).first()
-		# if 1000 < playlist.num_followers < 5000:
-		# 	payout = stripe.Payout.create(
-		# 		amount=300,
-		# 		currency='usd',
-		# 		method='standard',
-		# 		stripe_account=playlister.payment_info
-		# 	)
-		# elif 5000 < playlist.num_followers < 20000:
-		# 	payout = stripe.Payout.create(
-		# 		amount=600,
-		# 		currency='usd',
-		# 		method='standard',
-		# 		stripe_account=playlister.payment_info
-		# 	)
-		# elif 20000 < playlist.num_followers:
-		# 	payout = stripe.Payout.create(
-		# 		amount=900,
-		# 		currency='usd',
-		# 		method='standard',
-		# 		stripe_account=playlister.payment_info
-		# 	)
-		session = stripe.checkout.Session.create(
-			payment_method_types=['card'],
-			line_items=[{
-				'name': "Analog Collective",
-				'amount': 200,
-				'currency': 'usd',
-				'quantity': 1,
-			}],
-			success_url='http://127.0.0.1:5000/shop_success',
-			cancel_url='http://127.0.0.1:5000/shop_fail',
-			stripe_account=playlister.payment_info,
-		)
+
+		if 1000 < playlist.num_followers < 5000:
+			pmt_amnt = 300
+		elif 5000 < playlist.num_followers < 20000:
+			pmt_amnt = 600
+		elif 20000 < playlist.num_followers:
+			pmt_amnt = 900
+
+		if stripe.Balance.retrieve()['available'][0]['amount'] <= pmt_amnt:
+			charge_to_tie_to = stripe.Charge.list(limit=3)['data'][0]['id']
+
+			transfer = stripe.Transfer.create(
+				amount=5000,
+				currency='usd',
+				destination=playlister.payment_info,
+				source_transaction=charge_to_tie_to,
+			)
+		else:
+			transfer = stripe.Transfer.create(
+				amount=5000,
+				currency='usd',
+				destination=playlister.payment_info
+			)
 
 		db.session.commit()
 		# ---------------------------------------------------------------

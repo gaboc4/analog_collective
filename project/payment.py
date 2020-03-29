@@ -8,7 +8,8 @@ import json
 
 payment = Blueprint('payment', __name__)
 
-stripe.api_key = os.environ['STRIPE_KEY']
+
+stripe.api_key = os.environ['STRIPE_SK']
 
 
 @payment.route('/shop')
@@ -16,20 +17,8 @@ stripe.api_key = os.environ['STRIPE_KEY']
 def shop():
     user = Users.query.filter_by(email=current_user.email).first()
     curr_credits = user.credits if user.credits is not None else 0
-    # if user.payment_info is None:
-    #     customer = stripe.Customer.create(
-    #         email=user.email
-    #     )
-    #     intent = stripe.SetupIntent.create(
-    #         customer=customer['id'],
-    #         payment_method_types=["card"]
-    #     )
-    #     user.payment_info = customer['id']
-    #     db.session.commit()
-    #     print(intent.client_secret)
-    #     return render_template('shop.html', payment_info=0, client_secret=intent.client_secret,
-    #                            tokens=curr_credits, user_name=user.first_name + " " + user.last_name)
-    return render_template('shop.html',
+
+    return render_template('shop.html', key=os.environ['STRIPE_PK'],
                            tokens=curr_credits, user_name=user.first_name + " " + user.last_name)
 
 
@@ -37,7 +26,28 @@ def shop():
 @login_required
 def purchase_tokens():
     user = Users.query.filter_by(email=current_user.email).first()
-    new_credits = request.form.get('credit-amount')
-    user.credits += int(new_credits)
-    db.session.commit()
-    return redirect(url_for('payment.shop'))
+    try:
+        new_credits = request.form.get('credit-amount')
+        user.credits += int(new_credits)
+
+        if user.payment_info is None:
+            customer = stripe.Customer.create(
+                email=current_user.email,
+                source=request.form['stripeToken']
+            )
+            user.payment_info = customer.id
+            db.session.commit()
+
+        stripe.Charge.create(
+            customer=user.payment_info,
+            amount=int(new_credits)*500,
+            currency='usd',
+            description="Analog Collective token purchase for {} credits".format(str(new_credits))
+        )
+
+        flash('Payment success!')
+        return redirect(url_for('payment.shop'))
+    except stripe.error.StripeError as e:
+        print(e)
+        flash('Something went wrong when processing your payment, please try again.')
+        return redirect(url_for('payment.shop'))

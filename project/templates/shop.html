@@ -49,9 +49,14 @@
               <option value="100">100</option>
             </select>
           </div>
-            <button id="purchase-btn">Submit Purchase</button>
+            <script
+              src="https://checkout.stripe.com/checkout.js"
+              class="stripe-button"
+              data-key="{{ key }}"
+              data-description="Analog Collective token purchase"
+              data-locale="auto">
+            </script>
         </form>
-
       </div>
     </div>
   </div>
