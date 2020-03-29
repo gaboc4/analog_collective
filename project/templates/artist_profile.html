@@ -2,155 +2,175 @@
 
 {% block content %}
 
-<div class="body-margin ">
 
-  <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light"
-       style="height: 300px">
-    <div class="col-md-5 p-lg-5 mx-auto my-5">
-       <h1>Welcome back, {{user_name}}!</h1>
-      <h2 class="title" data-toggle="tooltip" data-placement="left"
-            title="{{credits_info}}">Tokens: {{user_credits}}</h2>
-      <form method="GET" action="/shop">
-        <button class="btn btn-primary" >Purchase More</button>
-      </form>
-      {% if exception %}
-        <p>{{exception}}</p>
-      {% endif %}
-      {% for message in get_flashed_messages() %}
-        <p>{{ message }}</p>
-      {% endfor %}
-    </div>
-  </div>
+<div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-dark"
+		 style="color: white; margin: 0 !important">
+	<div class="col-md-5 p-lg-5 mx-auto my-5">
+		<h1>Welcome back, {{user_name}}!</h1>
+		<h2 class="title" data-toggle="tooltip" data-placement="left"
+				title="{{credits_info}}">Tokens: {{user_credits}}</h2>
+		<form method="GET" action="/shop">
+			<button class="btn btn-primary">Purchase More</button>
+		</form>
+		{% if exception %}
+		<p>{{exception}}</p>
+		{% endif %}
+		{% for message in get_flashed_messages() %}
+		<p>{{ message }}</p>
+		{% endfor %}
+	</div>
 
 
-  <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
-    <div class="bg-dark mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
-      <div class="my-3 py-3">
-        <h2 class="display-5">New Song Input</h2>
-        <p>Enter a song you would like to add to the platform and let us know what artists you think you sound like
-            here. You can choose to add a song and any number of artists here at a given time, or
-            only upload a song, or only update your similar artists. If you would like to update a
-            specific similar artist, just submit a new one in the field that corresponds to their position
-            in the table below.</p>
-      </div>
-      {% include 'song_form.html' %}
-    </div>
-    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-      <div class="my-3 p-3">
-        <h2 class="display-5">Related Playlists</h2>
-        <p>These are the same as the playlists below and are populated based on genre match of your
-            tracks.</p>
-      </div>
-          {% if playlist_embed_urls %}
-            {% for url in playlist_embed_urls %}
-              <iframe src={{url}} width="200" height="250" frameborder="0"
-              allowtransparency="true" allow="encrypted-media"></iframe>
-            {% endfor %}
-      {% endif %}
-    </div>
-  </div>
+	<div class="row justify-content-md-center">
+		<div class="col col-lg-4">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					<h3 class="card-title">New Song Input</h3>
+					<br>
+					<p>Enter a song you would like to add to the platform and let us know what artists you think you sound like
+						here. You can choose to add a song and any number of artists here at a given time, or
+						only upload a song, or only update your similar artists. If you would like to update a
+						specific similar artist, just submit a new one in the field that corresponds to their position
+						in the table below.</p>
+					{% include 'song_form.html' %}
+				</div>
+			</div>
+		</div>
+		<div class="col col-lg-1"></div>
+		<div class="col col-lg-4">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					<h3 class="card-title">Related Playlists</h3>
+					<br>
+					<p>These are the same as the playlists below and are populated based on genre match of your tracks.</p>
+					{% if playlist_embed_urls %}
+					{% for url in playlist_embed_urls %}
+					<iframe src={{url}} width="200" height="250" frameborder="0"
+									allowtransparency="true" allow="encrypted-media"></iframe>
+					{% endfor %}
+					{% endif %}
+				</div>
+				<br>
+			</div>
+		</div>
+	</div>
 
-  <div class="position-relative overflow-hidden p-3 m-md-3 text-center bg-light"
-       style="height: 250px; padding: 0 !important">
-    <div class="col-md-5 p-lg-5 mx-auto my-5" style="padding: 0 !important">
-      <h1>How to add songs to a playlist -</h1>
-      <ul style="text-align: left; margin-left: 10%; margin-top: 5%">
-        <li>Select a song on the left hand table that you have uploaded</li>
-        <li>Select the playlist you want to add the song to on the right hand side</li>
-        <li>Click add to playlist on the table to the right</li>
-      </ul>
-    </div>
-  </div>
+	<div class="row justify-content-md-center">
+		<div class="col col-lg-3">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					<h3 class="card-title" style="text-decoration: underline;">How to add songs to a playlist</h3>
+					<br>
+					<ul style="text-align: left">
+						<li>Select a song on the left hand table that you have uploaded</li>
+						<li>Select the playlist you want to add the song to on the right hand side</li>
+						<li>Click add to playlist on the table to the right</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
 
-  <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
-    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-      <div class="my-3 p-3">
-        <h2 class="display-5">Current Songs and Related Artists</h2>
-        {% if tracks and related_artists %}
-          <div class="table-ovflow">
-            <table class="table table-in-card display" id="existingSongs">
-              <thead>
-                <tr>
-                  <th scope="col">Track Name</th>
-                  <th scope="col">Track Link</th>
-                  <th scope="col">Description</th>
-                  <th scope="col">Placed Playlist</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for track in tracks %}
-                <tr>
-                  {% for key in track %}
-                    {% if key.startswith('track_link') %}
-                      <td scope="row"><a href="{{track[key]}}" id="{{track['track_uri']}}"
-                                         target="_blank">Link to Track</a></td>
-                    {% elif not key.startswith('track_uri')%}
-                      {% if key.startswith('placed_playlist') and track[key]|length > 0 %}
-                        <td scope="row" style="word-wrap: break-word;max-width: 160px;">{{track[key]|join(', ')}}</td>
-                      {% elif key.startswith('placed_playlist') and track[key]|length == 0 %}
-                        <td scope="row" style="word-wrap: break-word;max-width: 160px;"></td>
-                      {% else %}
-                        <td scope="row" style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
-                </tr>
-              {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        <table class="table curr-artist-card">
-          <thead>
-            <tr>
-              <th scope="col">Related Artist 1</th>
-              <th scope="col">Related Artist 2</th>
-              <th scope="col">Related Artist 3</th>
-              <th scope="col">Related Artist 4</th>
-              <th scope="col">Related Artist 5</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {% for key in related_artists %}
-              <td>{{related_artists[key]}}</td>
-              {% endfor %}
-            </tr>
-          </tbody>
-        </table>
-        {% else %}
-          <p>You have no tracks or related artists in the system, add some above!</p>
-        {% endif %}
-        </div>
-      </div>
-    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-      <div class="my-3 py-3">
-        <h2 class="display-5">Add a Song to a Playlist</h2>
-      </div>
-      <div class="table-ovflow">
-        <table class="table table-in-card display" id="similarPlaylists">
-          <thead>
-            <tr>
-              <th scope="col">id</th>
-              <th scope="col">Playlist Name</th>
-              <th scope="col">Number of Followers</th>
-              <th scope="col">Number of Tracks</th>
-              <th scope="col">Genre</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for playlist in playlist_dict %}
-            <tr>
-              <td scope="row">{{playlist.id}}</td>
-              <td>{{playlist.name}}</td>
-              <td>{{playlist.num_followers}}</td>
-              <td>{{playlist.num_tracks}}</td>
-              <td>{{playlist.genre}}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+
+	<div class="row justify-content-md-center">
+		<div class="col col-lg-5">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					<h3 class="card-title">Current Songs and Related Artists</h3>
+					<br>
+					{% if tracks and related_artists %}
+					<div class="table-ovflow">
+						<table class="table table-in-card display" id="existingSongs" style="color: white">
+							<thead>
+							<tr>
+								<th scope="col">Track Name</th>
+								<th scope="col">Track Link</th>
+								<th scope="col">Description</th>
+								<th scope="col">Placed Playlist</th>
+							</tr>
+							</thead>
+							<tbody>
+							{% for track in tracks %}
+							<tr>
+								{% for key in track %}
+								{% if key.startswith('track_link') %}
+								<td scope="row"><a href="{{track[key]}}" id="{{track['track_uri']}}"
+																	 target="_blank">Link to Track</a></td>
+								{% elif not key.startswith('track_uri')%}
+								{% if key.startswith('placed_playlist') and track[key]|length > 0 %}
+								<td scope="row" style="word-wrap: break-word;max-width: 160px;">{{track[key]|join(', ')}}</td>
+								{% elif key.startswith('placed_playlist') and track[key]|length == 0 %}
+								<td scope="row" style="word-wrap: break-word;max-width: 160px;"></td>
+								{% else %}
+								<td scope="row" style="word-wrap: break-word;max-width: 160px;">{{track[key]}}</td>
+								{% endif %}
+								{% endif %}
+								{% endfor %}
+							</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<table class="table curr-artist-card" style="color: white">
+						<thead>
+						<tr>
+							<th scope="col">Related Artist 1</th>
+							<th scope="col">Related Artist 2</th>
+							<th scope="col">Related Artist 3</th>
+							<th scope="col">Related Artist 4</th>
+							<th scope="col">Related Artist 5</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr>
+							{% for key in related_artists %}
+							<td>{{related_artists[key]}}</td>
+							{% endfor %}
+						</tr>
+						</tbody>
+					</table>
+					{% else %}
+					<p>You have no tracks or related artists in the system, add some above!</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		<div class="col col-lg-1"></div>
+		<div class="col col-lg-5">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					<h3 class="card-title">Add a Song to a Playlist</h3>
+					<br>
+					<div class="table-ovflow">
+						<table class="table table-in-card display" id="similarPlaylists" style="color: white">
+							<thead>
+							<tr>
+								<th scope="col">id</th>
+								<th scope="col">Playlist Name</th>
+								<th scope="col">Number of Followers</th>
+								<th scope="col">Number of Tracks</th>
+								<th scope="col">Genre</th>
+							</tr>
+							</thead>
+							<tbody>
+							{% for playlist in playlist_dict %}
+							<tr>
+								<td scope="row">{{playlist.id}}</td>
+								<td>{{playlist.name}}</td>
+								<td>{{playlist.num_followers}}</td>
+								<td>{{playlist.num_tracks}}</td>
+								<td>{{playlist.genre}}</td>
+							</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<br>
+			</div>
+		</div>
+	</div>
+
 </div>
+
 {% endblock %}
