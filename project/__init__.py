@@ -2,7 +2,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import os
-import subprocess
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
@@ -11,11 +10,9 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://%s:%s@localhost/analog_collective' % (
-os.environ['DB_USER'], os.environ['DB_PASS'])
+	os.environ['DB_USER'], os.environ['DB_PASS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-js_env = subprocess.Popen("{} > env.js".format(os.path.join(os.getcwd(), 'project', 'env.sh')),
-                          shell=True, cwd=os.path.join(os.getcwd(), 'project', 'static'))
 
 db.init_app(app)
 

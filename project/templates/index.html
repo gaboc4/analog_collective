@@ -3,7 +3,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-dark" style="margin: 0 !important">
+<div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center" style="margin: 0 !important">
 	<div class="col-md-5 p-lg-5 mx-auto my-5">
 		<img src="/static/logo.png" style="height: 400px">
 		<h2 style="color: white">Analog Collective</h2>
@@ -18,7 +18,7 @@
 			<div class="card" style="background-color: #14595B !important; color: white !important;">
 				<div class="card-body">
 					<h3 class="card-title">For Curators</h3>
-          <br>
+					<br>
 					<p>Discover the next wave of up and coming artists while monetizing your playlist.
 						Our service will analyze your playlist for the artists you feature, and this will
 						allow independent artists to find your playlist and submit for your review.</p>
@@ -28,18 +28,42 @@
 				</div>
 			</div>
 		</div>
-    <div class="col col-lg-1"></div>
+		<div class="col col-lg-1"></div>
 		<div class="col col-lg-4">
 			<div class="card" style="background-color: #14595B !important; color: white !important;">
 				<div class="card-body">
 					<h3 class="card-title">For Artists</h3>
-          <br>
-          <p>Founded by a musician and producer, Analog Collective grew out of a need for a trustworthy tool that
-            artists can use to grow their audience on Spotify. If you’re here, you’ve probably already spent money
-            on music promotion with little to show for it. </p>
-          <p>With Analog Collective, you’ll have the unique ability to search our database for playlists
-            that have followers from your target demographic. Our self-service platform allows YOU to do decide where
-            you hope to have your music placed, and which artists you’d like to see yourself curated beside.</p>
+					<br>
+					<p>Founded by a musician and producer, Analog Collective grew out of a need for a trustworthy tool that
+						artists can use to grow their audience on Spotify. If you’re here, you’ve probably already spent money
+						on music promotion with little to show for it. </p>
+					<p>With Analog Collective, you’ll have the unique ability to search our database for playlists
+						that have followers from your target demographic. Our self-service platform allows YOU to do decide where
+						you hope to have your music placed, and which artists you’d like to see yourself curated beside.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row justify-content-md-center">
+		<div class="col col-lg-4">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					<h5 class="card-title">Contact Us</h5>
+					{% for message in get_flashed_messages() %}
+					<p>{{ message }}</p>
+					{% endfor %}
+					<form method="POST" action="/contact_form">
+						<div class="form-group">
+							<input class="form-control" type="email" name="contact_email"
+										 placeholder="Email" autofocus="" required>
+						</div>
+						<div class="field">
+							<textarea class="form-control" name="contact_msg" rows="3"
+												placeholder="Message"></textarea>
+						</div>
+						<button class="btn btn-primary" style="margin-top: 10px;">Submit</button>
+					</form>
 				</div>
 			</div>
 		</div>

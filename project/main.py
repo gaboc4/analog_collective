@@ -7,11 +7,13 @@ from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 
+import smtplib
 from .models import Users, PlaylistDetails, SpotifyToken, ArtistsInPlaylist, \
 	ArtistTracks, SimilarArtists, PlaylistToPlacedSong, BlogPosts
 from . import db
 from .helpers import refresh_access_token, get_access_and_refresh, \
 	get_playlist_genre, get_curr_artist_tracks, get_curr_sim_artists, refresh_playlist_deets
+
 
 main = Blueprint('main', __name__)
 
@@ -22,8 +24,28 @@ credits_info = "These tokens represent how much money you have put " \
 
 
 @main.route('/')
+@main.route('/index')
 def index():
 	return render_template('index.html')
+
+
+@main.route('/contact_form', methods=['POST'])
+def contact_form():
+	try:
+		smtp_obj = smtplib.SMTP_SSL('smtpout.secureserver.net', 465)
+		smtp_obj.ehlo()
+		smtp_obj.login(os.environ['EMAIL_ACCT'], os.environ['EMAIL_PASS'])
+		message = 'Subject: {}\n\n{}'.format('Analog Collective Contact Form',
+		                                     str(request.form.get('contact_msg')))
+		smtp_obj.sendmail(request.form.get('contact_email'), "will@analogcollective.com",
+		                  message)
+		flash("Thank you we will be in touch shortly!")
+		return redirect(url_for('main.index'))
+	except Exception as e:
+		print(e)
+		flash('There was an issue sending your message. Please try again '
+		      'or email will@analogcollective.com directly.')
+		return redirect(url_for('main.index'))
 
 
 @main.route('/profile')
