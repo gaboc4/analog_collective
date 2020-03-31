@@ -36,7 +36,5 @@ app.register_blueprint(auth_blueprint)
 
 # blueprint for non-auth parts of app
 from .main import main as main_blueprint
-from .payment import payment as payment_blueprint
 
 app.register_blueprint(main_blueprint)
-app.register_blueprint(payment_blueprint)

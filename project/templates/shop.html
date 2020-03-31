@@ -1,75 +1,82 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="body-margin">
-  <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
-    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-      <div class="my-3 py-3">
-        <h2 class="display-5">Token Purchase Options</h2>
-          <div class="table-ovflow">
-            <table class="table table-in-card">
-              <thead>
-                <tr>
-                  <th scope="col">Number of credits</th>
-                  <th scope="col">Songs</th>
-                  <th scope="col">Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td scope="row">10</td>
-                  <td>10</td>
-                  <td>$50</td>
-                </tr>
-                <tr>
-                  <td scope="row">50</td>
-                  <td>50</td>
-                  <td>$250</td>
-                </tr>
-                <tr>
-                  <td scope="row">100</td>
-                  <td>100</td>
-                  <td>$450</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-      </div>
-    </div>
-    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-      <div class="my-3 p-3">
-        <h2 class="display-5">Current Credits: {{tokens}}</h2>
-      </div>
-        <form id="payment-form"  method="POST" action="/payment_form">
-          <div class="form-group">
-            <label>How many credits would you like to purchase?</label>
-            <select class="form-control" name="credit-amount">
-              <option value="10">10</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-          </div>
-            <script
-              src="https://checkout.stripe.com/checkout.js"
-              class="stripe-button"
-              data-key="{{ key }}"
-              data-description="Analog Collective token purchase"
-              data-locale="auto">
-            </script>
-        </form>
-      </div>
-    </div>
-  </div>
-  {% for message in get_flashed_messages() %}
-  <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
-    <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-      <div class="my-3 py-3">
 
-        <h3>{{ message }}</h3>
+<div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center" style="margin: 0 !important">
+	<div class="col-md-5 p-lg-5 mx-auto my-5">
+		<h2 style="color: white">Token Purchase options</h2>
+	</div>
 
-      </div>
-    </div>
-  </div>
-      {% endfor %}
+	<div class="row justify-content-md-center">
+		<div class="col col-lg-4">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					<h3 class="card-title">Prices</h3>
+					<br>
+					<table class="table table-in-card" style="color: white; text-align: left;">
+						<thead>
+						<tr>
+							<th scope="col">Number of credits</th>
+							<th scope="col">Songs</th>
+							<th scope="col">Price</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr>
+							<td scope="row">10</td>
+							<td>10</td>
+							<td>$50</td>
+						</tr>
+						<tr>
+							<td scope="row">50</td>
+							<td>50</td>
+							<td>$250</td>
+						</tr>
+						<tr>
+							<td scope="row">100</td>
+							<td>100</td>
+							<td>$500</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="col col-lg-1"></div>
+		<div class="col col-lg-4">
+			<div class="card" style="background-color: #14595B !important; color: white !important;">
+				<div class="card-body">
+					<h3 class="card-title">Current Credits: {{tokens}}</h3>
+					<br>
+					<form id="payment-form" method="POST" action="/payment_form">
+						<div class="form-group">
+							<label>How many credits would you like to purchase?</label>
+							<select class="form-control" name="credit-amount">
+								<option value="10">10</option>
+								<option value="50">50</option>
+								<option value="100">100</option>
+							</select>
+						</div>
+						<script
+								src="https://checkout.stripe.com/checkout.js"
+								class="stripe-button"
+								data-key="{{ key }}"
+								data-description="Analog Collective token purchase"
+								data-locale="auto">
+						</script>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% for message in get_flashed_messages() %}
+	<div class="row justify-content-md-center">
+		<div class="col col-lg-3">
+			<div class="card-body">
+				<h3 class="card-title">{{ message }}</h3>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
 </div>
 {% endblock %}

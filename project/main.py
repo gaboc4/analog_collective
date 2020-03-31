@@ -7,6 +7,9 @@ from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 
+stripe.api_key = os.environ['STRIPE_SK']
+
+
 import smtplib
 from .models import Users, PlaylistDetails, SpotifyToken, ArtistsInPlaylist, \
 	ArtistTracks, SimilarArtists, PlaylistToPlacedSong, BlogPosts
@@ -14,9 +17,7 @@ from . import db
 from .helpers import refresh_access_token, get_access_and_refresh, \
 	get_playlist_genre, get_curr_artist_tracks, get_curr_sim_artists, refresh_playlist_deets
 
-
 main = Blueprint('main', __name__)
-
 
 credits_info = "These tokens represent how much money you have put " \
                "into the platform in order to add your songs to a playlist. " \
@@ -73,7 +74,6 @@ def profile():
 def stripe_auth():
 	user = Users.query.filter_by(email=current_user.email).first()
 	code = request.args.get('code')
-	stripe.api_key = os.environ['STRIPE_SK']
 
 	if code:
 		response = stripe.OAuth.token(
@@ -167,33 +167,49 @@ def artist_profile():
 	sp = refresh_access_token(SpotifyToken.query.filter_by(user_id=user.id).first().refresh_token, user.id)
 
 	sim_artists = SimilarArtists.query.filter_by(artist_id=user.id).first()
-	sim_artists = [sim_artists.similar_artist_1, sim_artists.similar_artist_2, sim_artists.similar_artist_3,
-	               sim_artists.similar_artist_4, sim_artists.similar_artist_5]
-	all_artists = sp.artists(sim_artists)['artists']
+	if sim_artists is not None:
+		sim_artists = [sim_artists.similar_artist_1, sim_artists.similar_artist_2, sim_artists.similar_artist_3,
+		               sim_artists.similar_artist_4, sim_artists.similar_artist_5]
+		all_artists = sp.artists(sim_artists)['artists']
 
-	genres = [artist['genres'] for artist in all_artists]
-	genres = [genre for sublist in genres for genre in sublist]
+		genres = [artist['genres'] for artist in all_artists]
+		genres = [genre for sublist in genres for genre in sublist]
 
-	similar_playlists = PlaylistDetails.query.filter(PlaylistDetails.genre.in_(genres)).all()
-	similar_playlist_ids = [playlist.playlist_uri.split(':')[2] for playlist in similar_playlists]
-	playlist_embed_urls = ["https://open.spotify.com/embed/playlist/%s" % p_id for p_id in similar_playlist_ids]
+		similar_playlists = PlaylistDetails.query.filter(PlaylistDetails.genre.in_(genres)).all()
+		similar_playlist_ids = [playlist.playlist_uri.split(':')[2] for playlist in similar_playlists]
+		playlist_embed_urls = ["https://open.spotify.com/embed/playlist/%s" % p_id for p_id in similar_playlist_ids]
 
-	if user.payment_info is None:
+		if user.payment_info is None:
+			return render_template('artist_profile.html',
+			                       user_name=user.first_name, approval_needed=True,
+			                       playlist_embed_urls=playlist_embed_urls,
+			                       tracks=get_curr_artist_tracks(user.id),
+			                       user_credits=user.credits if user.credits is not None else 0,
+			                       credits_info=credits_info, playlist_dict=similar_playlists,
+			                       related_artists=get_curr_sim_artists(user.id, sp))
+
 		return render_template('artist_profile.html',
-		                       user_name=user.first_name, approval_needed=True,
+		                       user_name=user.first_name,
 		                       playlist_embed_urls=playlist_embed_urls,
 		                       tracks=get_curr_artist_tracks(user.id),
 		                       user_credits=user.credits if user.credits is not None else 0,
 		                       credits_info=credits_info, playlist_dict=similar_playlists,
 		                       related_artists=get_curr_sim_artists(user.id, sp))
+	else:
+		if user.payment_info is None:
+			return render_template('artist_profile.html',
+			                       user_name=user.first_name, approval_needed=True,
+			                       tracks=get_curr_artist_tracks(user.id),
+			                       user_credits=user.credits if user.credits is not None else 0,
+			                       credits_info=credits_info,
+			                       related_artists=get_curr_sim_artists(user.id, sp))
 
-	return render_template('artist_profile.html',
-	                       user_name=user.first_name,
-	                       playlist_embed_urls=playlist_embed_urls,
-	                       tracks=get_curr_artist_tracks(user.id),
-	                       user_credits=user.credits if user.credits is not None else 0,
-	                       credits_info=credits_info, playlist_dict=similar_playlists,
-	                       related_artists=get_curr_sim_artists(user.id, sp))
+		return render_template('artist_profile.html',
+		                       user_name=user.first_name,
+		                       tracks=get_curr_artist_tracks(user.id),
+		                       user_credits=user.credits if user.credits is not None else 0,
+		                       credits_info=credits_info,
+		                       related_artists=get_curr_sim_artists(user.id, sp))
 
 
 @main.route('/artist_profile_update', methods=['POST'])
@@ -342,3 +358,44 @@ def blog_post():
 		db.session.commit()
 		return redirect(url_for('main.blog'))
 	return redirect(url_for('main.blog'))
+
+
+@main.route('/shop')
+@login_required
+def shop():
+	user = Users.query.filter_by(email=current_user.email).first()
+	curr_credits = user.credits if user.credits is not None else 0
+
+	return render_template('shop.html', key=os.environ['STRIPE_PK'],
+	                       tokens=curr_credits, user_name=user.first_name + " " + user.last_name)
+
+
+@main.route('/payment_form', methods=['POST'])
+@login_required
+def purchase_tokens():
+	user = Users.query.filter_by(email=current_user.email).first()
+	try:
+		new_credits = request.form.get('credit-amount')
+		user.credits += int(new_credits)
+
+		if user.payment_info is None:
+			customer = stripe.Customer.create(
+				email=current_user.email,
+				source=request.form['stripeToken']
+			)
+			user.payment_info = customer.id
+			db.session.commit()
+
+		stripe.Charge.create(
+			customer=user.payment_info,
+			amount=int(new_credits) * 500,
+			currency='usd',
+			description="Analog Collective token purchase for {} credits".format(str(new_credits))
+		)
+
+		flash('Payment success!')
+		return redirect(url_for('payment.shop'))
+	except stripe.error.StripeError as e:
+		print(e)
+		flash('Something went wrong when processing your payment, please try again.')
+		return redirect(url_for('payment.shop'))
