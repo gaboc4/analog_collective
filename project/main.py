@@ -242,7 +242,8 @@ def artist_song():
 
 	try:
 		if len([x for x in uploaded_artist_uris if x != '']) != 0:
-			all_artists = sp.artists([x for x in uploaded_artist_uris if x != ''])['artists']
+			all_artists = sp.artists([x for x in uploaded_artist_uris if x != ''
+			                          and 'spotify:artist:' in x])['artists']
 	except spotipy.client.SpotifyException as e:
 		flash("There was an issue retrieving your similar artists from Spotify, "
 		      "please make sure your URIs are correct and try again.")
